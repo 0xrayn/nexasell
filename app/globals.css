@@ -1,15 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Syne:wght@600;700;800&display=swap');
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  --background: #f0f2f8;
+  --foreground: #0d1117;
+  --card: #ffffff;
+  --card-border: rgba(0,0,0,0.07);
+  --sidebar-width: 240px;
+  --sidebar-collapsed: 64px;
 }
 
 .dark {
-  --background: #0f172a;
-  --foreground: #f1f5f9;
+  --background: #080c14;
+  --foreground: #e8edf5;
+  --card: #0f1623;
+  --card-border: rgba(255,255,255,0.07);
 }
 
 @theme inline {
@@ -17,28 +24,46 @@
   --color-foreground: var(--foreground);
 }
 
+html { overflow-x: hidden; }
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  overflow-x: hidden;
 }
+*, *::before, *::after { box-sizing: border-box; }
 
-* { box-sizing: border-box; }
-
-::-webkit-scrollbar { width: 5px; height: 5px; }
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
-.dark ::-webkit-scrollbar-thumb { background: #334155; }
+::-webkit-scrollbar-thumb { background: #c8d0e0; border-radius: 99px; }
+.dark ::-webkit-scrollbar-thumb { background: #1e2d45; }
 
-.line-clamp-1 {
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 1;
+/* ─── Gradient Animations ─── */
+@keyframes gradient-shift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
-.line-clamp-2 {
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
 }
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-gradient {
+  background-size: 300% 300%;
+  animation: gradient-shift 6s ease infinite;
+}
+.animate-float { animation: float 4s ease-in-out infinite; }
+.animate-slide-up { animation: slide-up 0.4s ease forwards; }
+
+/* ─── Line clamps ─── */
+.line-clamp-1 { overflow:hidden; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:1; }
+.line-clamp-2 { overflow:hidden; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; }
+
+/* ─── Sidebar transition ─── */
+.sidebar-transition { transition: width 0.25s cubic-bezier(0.4,0,0.2,1); }
