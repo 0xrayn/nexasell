@@ -116,7 +116,7 @@ export default function HomePage() {
               className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all flex-shrink-0 ${
                 activeCat === cat.id
                   ? "bg-gradient-to-r from-indigo-500 to-violet-500 text-white shadow-md shadow-indigo-500/30"
-                  : "bg-white dark:bg-[var(--card)] text-gray-500 dark:text-gray-400 border border-black/[0.06] dark:border-white/[0.06] hover:border-indigo-300 dark:hover:border-indigo-500/40 hover:text-indigo-600"
+                  : "bg-white dark:bg-[var(--surface)] text-gray-500 dark:text-gray-400 border border-black/[0.06] dark:border-white/[0.06] hover:border-indigo-300 dark:hover:border-indigo-500/40 hover:text-indigo-600"
               }`}>
               {cat.icon} {cat.name}
             </button>
@@ -132,7 +132,7 @@ export default function HomePage() {
           <div className="flex items-center gap-2">
             <SlidersHorizontal className="w-3.5 h-3.5 text-gray-400" />
             <select value={sortBy} onChange={e => setSortBy(e.target.value)}
-              className="text-xs bg-white dark:bg-[var(--card)] border border-black/[0.08] dark:border-white/[0.08] rounded-xl px-3 py-1.5 text-gray-600 dark:text-gray-300 outline-none focus:ring-2 focus:ring-indigo-500/40 cursor-pointer">
+              className="text-xs bg-white dark:bg-[var(--surface)] border border-black/[0.08] dark:border-white/[0.08] rounded-xl px-3 py-1.5 text-gray-600 dark:text-gray-300 outline-none focus:ring-2 focus:ring-indigo-500/40 cursor-pointer">
               <option value="popular">Most Popular</option>
               <option value="rating">Top Rated</option>
               <option value="price-asc">Price: Low → High</option>

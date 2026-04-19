@@ -52,7 +52,7 @@ export default function CartPage() {
           {/* Items */}
           <div className="lg:col-span-2 space-y-3">
             {items.map(item => (
-              <div key={item.product.id} className="group flex gap-4 bg-white dark:bg-[var(--card)] rounded-2xl p-4 border border-black/[0.06] dark:border-white/[0.06] hover:shadow-md dark:hover:shadow-black/20 transition-all">
+              <div key={item.product.id} className="group flex gap-4 bg-white dark:bg-[var(--surface)] rounded-2xl p-4 border border-black/[0.06] dark:border-white/[0.06] hover:shadow-md dark:hover:shadow-black/20 transition-all">
                 <Link href={`/customer/products/${item.product.id}`} className="flex-shrink-0">
                   <img src={item.product.image} alt={item.product.name} className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-2xl group-hover:opacity-90 transition-opacity" />
                 </Link>
@@ -86,7 +86,7 @@ export default function CartPage() {
 
           {/* Summary */}
           <div>
-            <div className="bg-white dark:bg-[var(--card)] rounded-2xl p-5 border border-black/[0.06] dark:border-white/[0.06] sticky top-20">
+            <div className="bg-white dark:bg-[var(--surface)] rounded-2xl p-5 border border-black/[0.06] dark:border-white/[0.06] sticky top-20">
               <h2 className="font-black text-gray-900 dark:text-white mb-1 flex items-center gap-2 text-sm" style={{ fontFamily: "Syne, sans-serif" }}>
                 <Tag className="w-4 h-4 text-indigo-500" />
                 Ringkasan Pesanan

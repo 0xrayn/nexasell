@@ -76,7 +76,7 @@ export default function CashierHistory() {
         {statCards.map((s) => {
           const Icon = s.icon;
           return (
-            <div key={s.label} className={`bg-white dark:bg-[var(--card)] rounded-2xl p-4 border ${s.border} hover:shadow-md dark:hover:shadow-black/20 transition-all`}>
+            <div key={s.label} className={`bg-[var(--surface)] rounded-2xl p-4 border ${s.border} hover:shadow-md dark:hover:shadow-black/20 transition-all`}>
               <div className={`${s.bg} p-2.5 rounded-xl w-fit mb-3`}>
                 <Icon className={`w-4 h-4 ${s.color}`} />
               </div>
@@ -91,7 +91,7 @@ export default function CashierHistory() {
       </div>
 
       {/* Table */}
-      <div className="bg-white dark:bg-[var(--card)] rounded-2xl border border-black/[0.06] dark:border-white/[0.06] overflow-hidden">
+      <div className="bg-[var(--surface)] rounded-2xl border border-black/[0.06] dark:border-white/[0.06] overflow-hidden">
         {/* Filters */}
         <div className="p-3 sm:p-4 border-b border-black/[0.06] dark:border-white/[0.06] flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1 max-w-xs">

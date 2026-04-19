@@ -62,7 +62,7 @@ export default function AddProductPage() {
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
           <div className="xl:col-span-2 space-y-4">
-            <div className="bg-white dark:bg-[var(--card)] rounded-2xl p-4 sm:p-5 border border-black/[0.06] dark:border-white/[0.06] space-y-4">
+            <div className="bg-[var(--surface)] rounded-2xl p-4 sm:p-5 border border-black/[0.06] dark:border-white/[0.06] space-y-4">
               <h2 className="text-sm font-bold text-gray-900 dark:text-white">Basic Info</h2>
               <F field="name" label="Product Name" placeholder="e.g. Premium Coffee" required />
               <div>
@@ -72,7 +72,7 @@ export default function AddProductPage() {
                 {errors.description && <p className="text-xs text-red-400 mt-1">{errors.description}</p>}
               </div>
             </div>
-            <div className="bg-white dark:bg-[var(--card)] rounded-2xl p-4 sm:p-5 border border-black/[0.06] dark:border-white/[0.06]">
+            <div className="bg-[var(--surface)] rounded-2xl p-4 sm:p-5 border border-black/[0.06] dark:border-white/[0.06]">
               <h2 className="text-sm font-bold text-gray-900 dark:text-white mb-4">Pricing & Inventory</h2>
               <div className="grid grid-cols-3 gap-3">
                 <F field="price" label="Price (Rp)" type="number" placeholder="50000" required />
@@ -80,7 +80,7 @@ export default function AddProductPage() {
                 <F field="stock" label="Stock" type="number" placeholder="100" required />
               </div>
             </div>
-            <div className="bg-white dark:bg-[var(--card)] rounded-2xl p-4 sm:p-5 border border-black/[0.06] dark:border-white/[0.06]">
+            <div className="bg-[var(--surface)] rounded-2xl p-4 sm:p-5 border border-black/[0.06] dark:border-white/[0.06]">
               <h2 className="text-sm font-bold text-gray-900 dark:text-white mb-4">Classification</h2>
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -103,7 +103,7 @@ export default function AddProductPage() {
           </div>
 
           <div className="space-y-4">
-            <div className="bg-white dark:bg-[var(--card)] rounded-2xl p-4 sm:p-5 border border-black/[0.06] dark:border-white/[0.06]">
+            <div className="bg-[var(--surface)] rounded-2xl p-4 sm:p-5 border border-black/[0.06] dark:border-white/[0.06]">
               <h2 className="text-sm font-bold text-gray-900 dark:text-white mb-3">Product Image</h2>
               <div className="aspect-square rounded-2xl overflow-hidden bg-gray-100 dark:bg-white/[0.04] border border-black/[0.06] dark:border-white/[0.06] mb-3 flex items-center justify-center">
                 {form.image ? (

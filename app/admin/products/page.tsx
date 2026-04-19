@@ -35,7 +35,7 @@ export default function ProductsPage() {
         </Link>
       </div>
 
-      <div className="bg-white dark:bg-[var(--card)] rounded-2xl border border-black/[0.06] dark:border-white/[0.06] overflow-hidden">
+      <div className="bg-[var(--surface)] rounded-2xl border border-black/[0.06] dark:border-white/[0.06] overflow-hidden">
         <div className="p-3 sm:p-4 border-b border-black/[0.06] dark:border-white/[0.06] flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1 max-w-xs">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
@@ -113,7 +113,7 @@ export default function ProductsPage() {
 
       {deleteId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
-          <div className="bg-white dark:bg-[var(--card)] rounded-2xl p-6 max-w-sm w-full shadow-2xl animate-slide-up">
+          <div className="bg-[var(--surface)] rounded-2xl p-6 max-w-sm w-full shadow-2xl animate-slide-up">
             <div className="w-12 h-12 bg-red-100 dark:bg-red-500/10 rounded-2xl flex items-center justify-center mb-4">
               <Trash2 className="w-6 h-6 text-red-500" />
             </div>

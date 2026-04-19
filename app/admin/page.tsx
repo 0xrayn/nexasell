@@ -1,5 +1,5 @@
 "use client";
-import { Package, ShoppingBag, TrendingUp, Users, ArrowUpRight, Clock, Star } from "lucide-react";
+import { Package, ShoppingBag, TrendingUp, Users, Clock, Star, ArrowUpRight, Zap } from "lucide-react";
 import { products, salesData, recentTransactions } from "@/data/products";
 import { formatRupiah } from "@/lib/utils";
 import RevenueChart from "@/components/admin/RevenueChart";
@@ -8,42 +8,84 @@ import Link from "next/link";
 const totalRevenue = salesData.reduce((s, d) => s + d.revenue, 0);
 const totalTransactions = salesData.reduce((s, d) => s + d.transactions, 0);
 
-export default function AdminDashboard() {
-  const stats = [
-    { label: "Products", value: String(products.length), icon: Package, gradient: "from-blue-500 to-cyan-500", bg: "bg-blue-50 dark:bg-blue-500/10", text: "text-blue-600 dark:text-blue-400", change: "+3 this month" },
-    { label: "Revenue", value: formatRupiah(totalRevenue), icon: TrendingUp, gradient: "from-violet-500 to-indigo-500", bg: "bg-violet-50 dark:bg-violet-500/10", text: "text-violet-600 dark:text-violet-400", change: "+18% vs last" },
-    { label: "Orders", value: String(totalTransactions), icon: ShoppingBag, gradient: "from-emerald-500 to-teal-500", bg: "bg-emerald-50 dark:bg-emerald-500/10", text: "text-emerald-600 dark:text-emerald-400", change: "+12% this month" },
-    { label: "Customers", value: "1,284", icon: Users, gradient: "from-rose-500 to-pink-500", bg: "bg-rose-50 dark:bg-rose-500/10", text: "text-rose-600 dark:text-rose-400", change: "+89 new" },
-  ];
+const stats = [
+  {
+    label: "Total Produk", value: String(products.length), change: "+3 bulan ini",
+    icon: Package, up: true,
+    gradient: "from-blue-600 to-cyan-500",
+    glow: "shadow-blue-500/25",
+    iconBg: "bg-blue-500",
+  },
+  {
+    label: "Total Revenue", value: formatRupiah(totalRevenue), change: "+18% dari bulan lalu",
+    icon: TrendingUp, up: true,
+    gradient: "from-indigo-600 to-violet-500",
+    glow: "shadow-indigo-500/25",
+    iconBg: "bg-indigo-500",
+  },
+  {
+    label: "Total Pesanan", value: totalTransactions.toLocaleString(), change: "+256 bulan ini",
+    icon: ShoppingBag, up: true,
+    gradient: "from-emerald-600 to-teal-500",
+    glow: "shadow-emerald-500/25",
+    iconBg: "bg-emerald-500",
+  },
+  {
+    label: "Pelanggan", value: "1.284", change: "+89 minggu ini",
+    icon: Users, up: true,
+    gradient: "from-rose-600 to-pink-500",
+    glow: "shadow-rose-500/25",
+    iconBg: "bg-rose-500",
+  },
+];
 
+export default function AdminDashboard() {
   return (
     <div className="p-4 sm:p-6 w-full max-w-full">
-      {/* Header */}
-      <div className="mb-6">
-        <div className="flex items-center gap-2 mb-1">
-          <div className="w-1.5 h-5 bg-gradient-to-b from-indigo-500 to-violet-500 rounded-full" />
-          <h1 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white" style={{ fontFamily: 'Syne, sans-serif' }}>Dashboard</h1>
+
+      {/* Page header */}
+      <div className="flex items-center justify-between mb-7">
+        <div>
+          <p className="text-xs font-bold text-[var(--text2)] uppercase tracking-widest mb-1">Overview</p>
+          <h1 className="text-2xl sm:text-3xl font-black text-[var(--text)]" style={{ fontFamily: "Cabinet Grotesk, sans-serif" }}>
+            Dashboard
+          </h1>
         </div>
-        <p className="text-sm text-gray-400 ml-3.5">Welcome back, Admin 👋</p>
+        <div className="flex items-center gap-2 px-4 py-2 bg-[var(--surface)] border border-[var(--border)] rounded-2xl">
+          <div className="w-2 h-2 rounded-full bg-emerald-500 anim-pulse-dot" />
+          <span className="text-xs font-bold text-[var(--text2)]">Live Data</span>
+        </div>
       </div>
 
-      {/* Stats — 2 cols on mobile, 4 on desktop */}
-      <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 mb-6">
-        {stats.map((s) => {
+      {/* Stat cards */}
+      <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 mb-6">
+        {stats.map((s, i) => {
           const Icon = s.icon;
           return (
-            <div key={s.label} className="relative overflow-hidden bg-white dark:bg-[var(--card)] rounded-2xl p-4 border border-black/[0.06] dark:border-white/[0.06] hover:shadow-lg dark:hover:shadow-black/30 transition-all group">
-              {/* gradient corner blob */}
-              <div className={`absolute -top-4 -right-4 w-20 h-20 bg-gradient-to-br ${s.gradient} opacity-10 rounded-full group-hover:opacity-20 transition-opacity`} />
-              <div className="flex items-start justify-between mb-3">
-                <div className={`${s.bg} p-2 rounded-xl`}>
-                  <Icon className={`w-4 h-4 ${s.text}`} />
-                </div>
-                <ArrowUpRight className="w-3.5 h-3.5 text-gray-300 dark:text-gray-600" />
+            <div key={s.label}
+              className={`relative overflow-hidden rounded-2xl p-5 text-white bg-gradient-to-br ${s.gradient} shadow-lg ${s.glow} anim-slide-up delay-${i + 1} card-lift`}
+            >
+              {/* Pattern overlay */}
+              <div className="absolute inset-0 opacity-10">
+                <div className="absolute top-0 right-0 w-32 h-32 rounded-full bg-white translate-x-1/2 -translate-y-1/2" />
+                <div className="absolute bottom-0 left-0 w-20 h-20 rounded-full bg-white -translate-x-1/2 translate-y-1/2" />
               </div>
-              <p className="text-lg sm:text-xl font-black text-gray-900 dark:text-white mb-0.5 truncate" style={{ fontFamily: 'Syne, sans-serif' }}>{s.value}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">{s.label}</p>
-              <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold mt-1.5">{s.change}</p>
+              <div className="relative z-10">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+                    <Icon className="w-5 h-5 text-white" />
+                  </div>
+                  <ArrowUpRight className="w-4 h-4 text-white/60" />
+                </div>
+                <p className="text-2xl sm:text-3xl font-black leading-none mb-1 truncate" style={{ fontFamily: "Cabinet Grotesk, sans-serif" }}>
+                  {s.value}
+                </p>
+                <p className="text-sm text-white/80 font-semibold mb-1">{s.label}</p>
+                <div className="flex items-center gap-1">
+                  <Zap className="w-3 h-3 text-white/70" />
+                  <p className="text-[11px] text-white/70 font-medium">{s.change}</p>
+                </div>
+              </div>
             </div>
           );
         })}
@@ -51,67 +93,83 @@ export default function AdminDashboard() {
 
       {/* Charts row */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 mb-5">
-        <div className="xl:col-span-2 min-w-0">
+        <div className="xl:col-span-2 min-w-0 anim-slide-up delay-2">
           <RevenueChart />
         </div>
-        <div className="bg-white dark:bg-[var(--card)] rounded-2xl p-4 border border-black/[0.06] dark:border-white/[0.06] min-w-0">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-bold text-sm text-gray-900 dark:text-white">Top Products</h3>
-            <Link href="/admin/products" className="text-xs text-indigo-500 hover:underline font-medium">View all</Link>
+
+        {/* Top Products */}
+        <div className="bg-[var(--surface)] rounded-2xl border border-[var(--border)] p-5 card-lift anim-slide-up delay-3">
+          <div className="flex items-center justify-between mb-5">
+            <p className="text-xs font-black text-[var(--text2)] uppercase tracking-widest">Top Produk</p>
+            <Link href="/admin/products" className="text-[11px] font-bold text-indigo-500 hover:underline">Lihat Semua</Link>
           </div>
-          <div className="space-y-3">
-            {products.sort((a, b) => b.sold - a.sold).slice(0, 6).map((p, i) => (
-              <div key={p.id} className="flex items-center gap-2.5 min-w-0">
-                <span className="text-xs font-black text-gray-300 dark:text-gray-600 w-4 flex-shrink-0">#{i + 1}</span>
-                <img src={p.image} alt={p.name} className="w-8 h-8 object-cover rounded-lg flex-shrink-0" />
+          <div className="space-y-3.5">
+            {products.sort((a, b) => b.sold - a.sold).slice(0, 5).map((p, i) => (
+              <div key={p.id} className="flex items-center gap-3">
+                <div className="relative flex-shrink-0">
+                  <img src={p.image} alt={p.name} className="w-10 h-10 object-cover rounded-xl" />
+                  {i < 3 && (
+                    <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 text-white text-[8px] font-black flex items-center justify-center">
+                      {i + 1}
+                    </div>
+                  )}
+                </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-semibold text-gray-900 dark:text-gray-100 line-clamp-1">{p.name}</p>
-                  <div className="flex items-center gap-1">
-                    <Star className="w-2.5 h-2.5 fill-amber-400 text-amber-400 flex-shrink-0" />
-                    <span className="text-[10px] text-gray-400">{p.sold} sold</span>
+                  <p className="text-xs font-bold text-[var(--text)] line-clamp-1">{p.name}</p>
+                  <div className="flex items-center gap-1 mt-0.5">
+                    <Star className="w-2.5 h-2.5 fill-amber-400 text-amber-400" />
+                    <span className="text-[10px] text-[var(--text2)]">{p.sold} terjual</span>
                   </div>
                 </div>
-                <span className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 flex-shrink-0">{formatRupiah(p.price)}</span>
+                <span className="text-[11px] font-black text-[var(--text)] flex-shrink-0">{formatRupiah(p.price)}</span>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Transactions table */}
-      <div className="bg-white dark:bg-[var(--card)] rounded-2xl border border-black/[0.06] dark:border-white/[0.06] overflow-hidden">
-        <div className="flex items-center justify-between px-4 sm:px-5 py-4 border-b border-black/[0.06] dark:border-white/[0.06]">
+      {/* Transactions */}
+      <div className="bg-[var(--surface)] rounded-2xl border border-[var(--border)] overflow-hidden anim-slide-up delay-4">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--border)]">
           <div className="flex items-center gap-2">
-            <Clock className="w-4 h-4 text-gray-400 flex-shrink-0" />
-            <h3 className="font-bold text-sm text-gray-900 dark:text-white">Recent Transactions</h3>
+            <Clock className="w-4 h-4 text-[var(--text2)]" />
+            <p className="font-black text-sm text-[var(--text)]">Transaksi Terbaru</p>
           </div>
-          <span className="text-[10px] font-semibold bg-gray-100 dark:bg-white/[0.06] text-gray-500 dark:text-gray-400 px-2 py-1 rounded-full">{recentTransactions.length} records</span>
+          <span className="text-[10px] font-black bg-[var(--surface2)] border border-[var(--border)] text-[var(--text2)] px-2.5 py-1 rounded-full">
+            {recentTransactions.length} records
+          </span>
         </div>
-        {/* Responsive table wrapper */}
         <div className="overflow-x-auto w-full">
-          <table className="w-full min-w-[500px]">
+          <table className="w-full min-w-[520px]">
             <thead>
-              <tr className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider border-b border-black/[0.04] dark:border-white/[0.04]">
-                <th className="text-left px-4 sm:px-5 py-3">ID</th>
-                <th className="text-left px-4 sm:px-5 py-3">Customer</th>
-                <th className="text-left px-4 sm:px-5 py-3 hidden sm:table-cell">Items</th>
-                <th className="text-left px-4 sm:px-5 py-3">Total</th>
-                <th className="text-left px-4 sm:px-5 py-3">Status</th>
+              <tr className="text-[10px] font-black text-[var(--text2)] uppercase tracking-wider border-b border-[var(--border)]/50">
+                <th className="text-left px-5 py-3">ID</th>
+                <th className="text-left px-5 py-3">Pelanggan</th>
+                <th className="text-left px-5 py-3 hidden sm:table-cell">Item</th>
+                <th className="text-left px-5 py-3">Total</th>
+                <th className="text-left px-5 py-3 hidden md:table-cell">Kasir</th>
+                <th className="text-left px-5 py-3">Status</th>
               </tr>
             </thead>
             <tbody>
               {recentTransactions.map((trx) => (
-                <tr key={trx.id} className="border-b border-black/[0.03] dark:border-white/[0.03] hover:bg-gray-50/60 dark:hover:bg-white/[0.02] transition-colors last:border-0">
-                  <td className="px-4 sm:px-5 py-3 text-[11px] font-mono font-semibold text-gray-400">{trx.id}</td>
-                  <td className="px-4 sm:px-5 py-3 text-sm font-semibold text-gray-900 dark:text-gray-100">{trx.customer}</td>
-                  <td className="px-4 sm:px-5 py-3 text-xs text-gray-500 hidden sm:table-cell">{trx.items} items</td>
-                  <td className="px-4 sm:px-5 py-3 text-sm font-bold text-gray-900 dark:text-gray-100 whitespace-nowrap">{formatRupiah(trx.total)}</td>
-                  <td className="px-4 sm:px-5 py-3">
-                    <span className={`inline-flex items-center text-[10px] font-bold px-2 py-1 rounded-full whitespace-nowrap ${
+                <tr key={trx.id} className="border-b border-[var(--border)]/40 hover:bg-[var(--surface2)] transition-colors last:border-0">
+                  <td className="px-5 py-3.5 text-[11px] font-mono font-bold text-[var(--text2)]">{trx.id}</td>
+                  <td className="px-5 py-3.5 text-sm font-bold text-[var(--text)]">{trx.customer}</td>
+                  <td className="px-5 py-3.5 text-xs text-[var(--text2)] hidden sm:table-cell">{trx.items} item</td>
+                  <td className="px-5 py-3.5 text-sm font-black text-[var(--text)] whitespace-nowrap">{formatRupiah(trx.total)}</td>
+                  <td className="px-5 py-3.5 text-xs text-[var(--text2)] hidden md:table-cell">{trx.cashier}</td>
+                  <td className="px-5 py-3.5">
+                    <span className={`inline-flex items-center gap-1 text-[10px] font-black px-2.5 py-1 rounded-full whitespace-nowrap ${
                       trx.status === "completed" ? "bg-emerald-100 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-400" :
-                      trx.status === "pending" ? "bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-400" :
-                      "bg-red-100 dark:bg-red-500/15 text-red-700 dark:text-red-400"
-                    }`}>{trx.status}</span>
+                      trx.status === "pending"   ? "bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-400" :
+                                                   "bg-red-100 dark:bg-red-500/15 text-red-600 dark:text-red-400"
+                    }`}>
+                      <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
+                        trx.status === "completed" ? "bg-emerald-500" : trx.status === "pending" ? "bg-amber-500" : "bg-red-500"
+                      }`} />
+                      {trx.status}
+                    </span>
                   </td>
                 </tr>
               ))}

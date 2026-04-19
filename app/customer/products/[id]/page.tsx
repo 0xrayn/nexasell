@@ -54,7 +54,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-12 mb-12">
           {/* Image */}
-          <div className="relative rounded-3xl overflow-hidden bg-gray-100 dark:bg-[var(--card)] aspect-square shadow-xl">
+          <div className="relative rounded-3xl overflow-hidden bg-gray-100 dark:bg-[var(--surface)] aspect-square shadow-xl">
             <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
             {product.badge && (
               <span className={`absolute top-4 left-4 text-sm font-black px-3 py-1.5 rounded-full shadow-lg ${

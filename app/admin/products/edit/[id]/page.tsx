@@ -53,7 +53,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
           <div className="xl:col-span-2 space-y-4">
-            <div className="bg-white dark:bg-[var(--card)] rounded-2xl p-5 border border-black/[0.06] dark:border-white/[0.06] space-y-4">
+            <div className="bg-white dark:bg-[var(--surface)] rounded-2xl p-5 border border-black/[0.06] dark:border-white/[0.06] space-y-4">
               <h2 className="text-sm font-bold text-gray-900 dark:text-white">Basic Info</h2>
               <div>
                 <label className="block text-xs font-bold text-gray-600 dark:text-gray-400 mb-1.5">Product Name</label>
@@ -66,7 +66,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                   className="w-full px-4 py-2.5 rounded-xl border border-black/[0.08] dark:border-white/[0.08] bg-gray-50 dark:bg-white/[0.04] text-gray-900 dark:text-gray-100 text-sm outline-none focus:ring-2 focus:ring-indigo-500/40 resize-none" />
               </div>
             </div>
-            <div className="bg-white dark:bg-[var(--card)] rounded-2xl p-5 border border-black/[0.06] dark:border-white/[0.06]">
+            <div className="bg-white dark:bg-[var(--surface)] rounded-2xl p-5 border border-black/[0.06] dark:border-white/[0.06]">
               <h2 className="text-sm font-bold text-gray-900 dark:text-white mb-4">Pricing & Inventory</h2>
               <div className="grid grid-cols-3 gap-3">
                 {[["price","Price (Rp)","number"],["originalPrice","Original (Rp)","number"],["stock","Stock","number"]].map(([f,l,t]) => (
@@ -78,7 +78,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                 ))}
               </div>
             </div>
-            <div className="bg-white dark:bg-[var(--card)] rounded-2xl p-5 border border-black/[0.06] dark:border-white/[0.06]">
+            <div className="bg-white dark:bg-[var(--surface)] rounded-2xl p-5 border border-black/[0.06] dark:border-white/[0.06]">
               <h2 className="text-sm font-bold text-gray-900 dark:text-white mb-4">Classification</h2>
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -101,7 +101,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
           </div>
 
           <div className="space-y-4">
-            <div className="bg-white dark:bg-[var(--card)] rounded-2xl p-5 border border-black/[0.06] dark:border-white/[0.06]">
+            <div className="bg-white dark:bg-[var(--surface)] rounded-2xl p-5 border border-black/[0.06] dark:border-white/[0.06]">
               <h2 className="text-sm font-bold text-gray-900 dark:text-white mb-3">Product Image</h2>
               <div className="aspect-square rounded-2xl overflow-hidden bg-gray-100 dark:bg-white/[0.04] border border-black/[0.06] dark:border-white/[0.06] mb-3 flex items-center justify-center">
                 {form.image ? (

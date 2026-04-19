@@ -72,7 +72,7 @@ export default function CheckoutPage() {
           <h1 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white mb-2" style={{ fontFamily: "Syne, sans-serif" }}>Pesanan Berhasil! 🎉</h1>
           <p className="text-sm text-gray-400 max-w-sm">Terima kasih, <span className="font-bold text-gray-700 dark:text-gray-300">{orderName}</span>! Pesananmu sedang diproses.</p>
         </div>
-        <div className="bg-white dark:bg-[var(--card)] rounded-2xl p-5 border border-black/[0.06] dark:border-white/[0.06] w-full max-w-xs space-y-3">
+        <div className="bg-white dark:bg-[var(--surface)] rounded-2xl p-5 border border-black/[0.06] dark:border-white/[0.06] w-full max-w-xs space-y-3">
           <div className="flex justify-between text-sm"><span className="text-gray-400">Order ID</span><span className="font-mono font-bold text-gray-900 dark:text-white">#ORD{Date.now().toString().slice(-6)}</span></div>
           <div className="flex justify-between text-sm"><span className="text-gray-400">Pembayaran</span><span className="font-semibold capitalize text-gray-700 dark:text-gray-300">{payMethod}</span></div>
           <div className="flex justify-between font-black border-t border-black/[0.06] dark:border-white/[0.06] pt-3" style={{ fontFamily: "Syne, sans-serif" }}>
@@ -111,7 +111,7 @@ export default function CheckoutPage() {
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
             <div className="lg:col-span-2 space-y-4">
-              <div className="bg-white dark:bg-[var(--card)] rounded-2xl p-5 border border-black/[0.06] dark:border-white/[0.06]">
+              <div className="bg-white dark:bg-[var(--surface)] rounded-2xl p-5 border border-black/[0.06] dark:border-white/[0.06]">
                 <h2 className="font-black text-sm text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                   <span className="w-6 h-6 rounded-full bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-xs font-black flex items-center justify-center">1</span>
                   Info Pengiriman
@@ -125,7 +125,7 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              <div className="bg-white dark:bg-[var(--card)] rounded-2xl p-5 border border-black/[0.06] dark:border-white/[0.06]">
+              <div className="bg-white dark:bg-[var(--surface)] rounded-2xl p-5 border border-black/[0.06] dark:border-white/[0.06]">
                 <h2 className="font-black text-sm text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                   <span className="w-6 h-6 rounded-full bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-xs font-black flex items-center justify-center">2</span>
                   Metode Pembayaran
@@ -150,7 +150,7 @@ export default function CheckoutPage() {
             </div>
 
             <div>
-              <div className="bg-white dark:bg-[var(--card)] rounded-2xl p-5 border border-black/[0.06] dark:border-white/[0.06] sticky top-20">
+              <div className="bg-white dark:bg-[var(--surface)] rounded-2xl p-5 border border-black/[0.06] dark:border-white/[0.06] sticky top-20">
                 <h2 className="font-black text-sm text-gray-900 dark:text-white mb-4">Pesanan ({items.length})</h2>
                 <div className="space-y-3 max-h-52 overflow-y-auto">
                   {items.map(item => (

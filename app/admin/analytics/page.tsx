@@ -43,7 +43,7 @@ export default function AnalyticsPage() {
         {kpis.map((k) => {
           const Icon = k.icon;
           return (
-            <div key={k.label} className="bg-white dark:bg-[var(--card)] rounded-2xl p-4 border border-black/[0.06] dark:border-white/[0.06]">
+            <div key={k.label} className="bg-[var(--surface)] rounded-2xl p-4 border border-black/[0.06] dark:border-white/[0.06]">
               <div className={`${k.bg} p-2 rounded-xl w-fit mb-3`}><Icon className={`w-4 h-4 ${k.color}`} /></div>
               <p className="text-lg sm:text-xl font-black text-gray-900 dark:text-white truncate" style={{ fontFamily: 'Syne, sans-serif' }}>{k.value}</p>
               <p className="text-xs text-gray-400 mt-0.5">{k.label}</p>
@@ -55,7 +55,7 @@ export default function AnalyticsPage() {
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 mb-4">
         {/* Revenue bars */}
-        <div className="bg-white dark:bg-[var(--card)] rounded-2xl p-4 sm:p-5 border border-black/[0.06] dark:border-white/[0.06]">
+        <div className="bg-[var(--surface)] rounded-2xl p-4 sm:p-5 border border-black/[0.06] dark:border-white/[0.06]">
           <h3 className="font-bold text-sm text-gray-900 dark:text-white mb-4">Revenue Trend</h3>
           <div className="space-y-2">
             {salesData.map((d, i) => {
@@ -75,7 +75,7 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Transaction volume */}
-        <div className="bg-white dark:bg-[var(--card)] rounded-2xl p-4 sm:p-5 border border-black/[0.06] dark:border-white/[0.06]">
+        <div className="bg-[var(--surface)] rounded-2xl p-4 sm:p-5 border border-black/[0.06] dark:border-white/[0.06]">
           <h3 className="font-bold text-sm text-gray-900 dark:text-white mb-4">Transaction Volume</h3>
           <div className="flex items-end gap-1.5 sm:gap-2 h-28 mb-2">
             {salesData.map((d, i) => {
@@ -99,7 +99,7 @@ export default function AnalyticsPage() {
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
         {/* Category */}
-        <div className="bg-white dark:bg-[var(--card)] rounded-2xl p-4 sm:p-5 border border-black/[0.06] dark:border-white/[0.06]">
+        <div className="bg-[var(--surface)] rounded-2xl p-4 sm:p-5 border border-black/[0.06] dark:border-white/[0.06]">
           <h3 className="font-bold text-sm text-gray-900 dark:text-white mb-4">Revenue by Category</h3>
           <div className="space-y-3">
             {catEntries.map(([cat, data]) => {
@@ -121,7 +121,7 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Order status */}
-        <div className="bg-white dark:bg-[var(--card)] rounded-2xl p-4 sm:p-5 border border-black/[0.06] dark:border-white/[0.06]">
+        <div className="bg-[var(--surface)] rounded-2xl p-4 sm:p-5 border border-black/[0.06] dark:border-white/[0.06]">
           <h3 className="font-bold text-sm text-gray-900 dark:text-white mb-4">Order Status</h3>
           <div className="space-y-3 mb-4">
             {Object.entries(statusCounts).map(([status, count]) => {
