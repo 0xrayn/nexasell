@@ -4,14 +4,14 @@ import { CartProvider } from "@/lib/CartContext";
 import { ThemeProvider } from "@/lib/ThemeContext";
 
 export const metadata: Metadata = {
-  title: "NexaSell – POS & Sales Management",
-  description: "Modern Point of Sale system",
+  title: "NexaSell – Modern POS System",
+  description: "Platform POS modern untuk bisnis Anda",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen antialiased overflow-x-hidden">
+    <html lang="id" suppressHydrationWarning>
+      <body className="antialiased overflow-x-hidden" style={{ background: "var(--bg)", color: "var(--text)" }}>
         <ThemeProvider>
           <CartProvider>
             {children}

@@ -5,19 +5,34 @@ import { SidebarProvider, useSidebar } from "@/lib/SidebarContext";
 function AdminContent({ children }: { children: React.ReactNode }) {
   const { collapsed } = useSidebar();
   return (
-    <div className="min-h-screen bg-[var(--bg)]">
+    <div style={{ background: "var(--bg)", minHeight: "100vh" }}>
       <AdminSidebar />
-      <main className="min-h-screen pt-14 lg:pt-0 transition-[padding-left] duration-300 ease-in-out"
-        style={{ paddingLeft: `max(0px, ${collapsed ? "64px" : "248px"})` }}
-        // On mobile paddingLeft is 0 (lg: prefix)
+      {/* On mobile: pt-16 to clear hamburger. On lg: paddingLeft for sidebar width */}
+      <div
+        className="pt-16 lg:pt-0 w-full max-w-full overflow-x-hidden"
+        style={{ paddingLeft: 0 }}
       >
-        <style>{`@media(max-width:1023px){main{padding-left:0!important}}`}</style>
-        <div className="w-full max-w-full overflow-x-hidden">{children}</div>
-      </main>
+        {/* This inner div only gets padding on lg+ via a class we'll add */}
+        <div className="lg:transition-[padding] lg:duration-300" style={{ paddingLeft: `var(--sidebar-offset, 0)` }}>
+          <style>{`
+            @media (min-width: 1024px) {
+              :root { --sidebar-offset: ${collapsed ? "68px" : "256px"}; }
+            }
+            @media (max-width: 1023px) {
+              :root { --sidebar-offset: 0px; }
+            }
+          `}</style>
+          {children}
+        </div>
+      </div>
     </div>
   );
 }
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  return <SidebarProvider><AdminContent>{children}</AdminContent></SidebarProvider>;
+  return (
+    <SidebarProvider>
+      <AdminContent>{children}</AdminContent>
+    </SidebarProvider>
+  );
 }
