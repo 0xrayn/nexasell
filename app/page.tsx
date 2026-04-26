@@ -32,7 +32,7 @@ export default function HomePage() {
       <Navbar />
 
       {/* ═══ HERO ═══ */}
-      <section className="relative overflow-hidden" style={{ background: "#07050f", minHeight: 520 }}>
+      <section className="relative overflow-hidden" style={{ background: "#07050f" }}>
         {/* Multi-layer atmospheric background */}
         <div className="absolute inset-0" style={{
           backgroundImage: [
@@ -149,7 +149,7 @@ export default function HomePage() {
             </div>
 
             {/* ── RIGHT — Flash sale + best seller ── */}
-            <div className="hidden lg:flex flex-col gap-3 anim-slide-up d2">
+            <div className="hidden lg:flex flex-col gap-3 anim-slide-up d2" style={{ maxHeight:"85vh", overflowY:"auto" }}>
 
               {/* Flash sale panel */}
               <div className="rounded-3xl p-4 relative overflow-hidden"

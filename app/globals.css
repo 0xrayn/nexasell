@@ -69,7 +69,7 @@ body {
   50% { background-position: 100% 50%; }
 }
 @keyframes slide-up-in {
-  from { opacity: 0; transform: translateY(24px); }
+  from { opacity: 0; transform: translateY(22px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 @keyframes fade-in-fast {
@@ -84,6 +84,11 @@ body {
   from { background-position: -200% center; }
   to   { background-position: 200% center; }
 }
+@keyframes pop-in {
+  0% { opacity: 0; transform: scale(0.88) translateY(8px); }
+  70% { opacity: 1; transform: scale(1.02) translateY(-2px); }
+  100% { transform: scale(1) translateY(0); }
+}
 
 /* ── Utilities ── */
 .anim-float     { animation: float-bob 5.5s ease-in-out infinite; }
@@ -93,6 +98,7 @@ body {
 .anim-pulse     { animation: pulse-beacon 2.2s ease-in-out infinite; }
 .anim-spin-slow { animation: spin-ring 18s linear infinite; }
 .anim-spin-rev  { animation: spin-ring-rev 12s linear infinite; }
+.anim-pop       { animation: pop-in 0.4s cubic-bezier(0.34,1.56,0.64,1) both; }
 
 .d1  { animation-delay: 0.05s; }
 .d2  { animation-delay: 0.10s; }
@@ -116,5 +122,15 @@ body {
 .line-clamp-2 { overflow:hidden; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; }
 
 /* ── Placeholder ── */
-input::placeholder { color: rgba(255,255,255,0.38); }
-input.light-ph::placeholder { color: #9ca3af; }
+input::placeholder { color: var(--text3); opacity: 1; }
+.dark input::placeholder { color: rgba(255,255,255,0.25); }
+
+/* ── Focus ring global ── */
+input:focus, select:focus, textarea:focus {
+  outline: none;
+}
+
+/* ── Smooth page transitions ── */
+main, [class*="page"] {
+  animation: slide-up-in 0.4s cubic-bezier(0.16,1,0.3,1) both;
+}
