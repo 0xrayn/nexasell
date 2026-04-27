@@ -197,35 +197,25 @@ export default function HomePage() {
               }
             }
             .hero-right-panel { display: flex; }
-            @media (min-width: 900px) {
-              .hero-right-panel { display: flex; }
-            }
-            /* On mobile: side-by-side scroll for the two panels */
+            /* Mobile: full-width stacked panels */
             .hero-mobile-panels {
               display: flex;
+              flex-direction: column;
               gap: 12px;
-              overflow-x: auto;
-              scroll-snap-type: x mandatory;
-              -webkit-overflow-scrolling: touch;
-              scrollbar-width: none;
-              padding-bottom: 4px;
+              width: 100%;
             }
-            .hero-mobile-panels::-webkit-scrollbar { display: none; }
-            .hero-mobile-panels > * {
-              flex-shrink: 0;
-              width: min(320px, 88vw);
-              scroll-snap-align: start;
+            .hero-mobile-panels > * { width: 100%; }
+            /* Mobile Flash Sale grid: single column list */
+            .sale-grid {
+              display: flex;
+              flex-direction: column;
+              gap: 8px;
             }
             @media (min-width: 900px) {
-              .hero-mobile-panels {
-                flex-direction: column;
-                overflow-x: visible;
-                scroll-snap-type: none;
-                padding-bottom: 0;
-              }
-              .hero-mobile-panels > * {
-                flex-shrink: 1;
-                width: 100%;
+              .sale-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
               }
             }
           `}</style>
@@ -369,12 +359,12 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <div className="p-3 grid grid-cols-2 gap-2.5">
+              <div className="p-3 sale-grid">
                 {saleProducts.map(p => {
                   const disc = p.originalPrice ? Math.round((1 - p.price / p.originalPrice) * 100) : 0;
                   return (
                     <Link key={p.id} href={`/customer/products/${p.id}`}
-                      className="sale-card group flex items-center gap-3 p-3 rounded-2xl"
+                      className="sale-card group flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 rounded-2xl"
                       style={{
                         background: dark ? "rgba(255,255,255,.04)" : "rgba(255,255,255,.98)",
                         border: `1px solid ${dark ? "rgba(255,255,255,.08)" : "rgba(99,102,241,.14)"}`,
@@ -392,9 +382,8 @@ export default function HomePage() {
                         )}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="text-[11px] font-bold line-clamp-1 mb-0.5"
-                          style={{ color: dark ? "rgba(255,255,255,.88)" : "#1e1b4b" }}>{p.name}</p>
-                        <p className="text-[13px] font-black" style={{ color: dark ? "#86efac" : "#059669" }}>
+                        <p className="text-[11px] sm:text-[12px] font-bold leading-tight mb-0.5" style={{ color: dark ? "rgba(255,255,255,.88)" : "#1e1b4b", overflow:"hidden", display:"-webkit-box", WebkitBoxOrient:"vertical", WebkitLineClamp:2 }}>{p.name}</p>
+                        <p className="text-[12px] sm:text-[13px] font-black" style={{ color: dark ? "#86efac" : "#059669" }}>
                           {formatRupiah(p.price)}
                         </p>
                         {p.originalPrice && (
@@ -458,12 +447,11 @@ export default function HomePage() {
                       className="w-10 h-10 rounded-xl object-cover flex-shrink-0"
                       style={{ border: `1px solid ${dark ? "rgba(255,255,255,.09)" : "rgba(99,102,241,.12)"}` }} />
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-bold line-clamp-1"
-                        style={{ color: dark ? "rgba(255,255,255,.88)" : "#1e1b4b" }}>{p.name}</p>
+                      <p className="text-xs font-bold" style={{ color: dark ? "rgba(255,255,255,.88)" : "#1e1b4b", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", maxWidth:"100%" }}>{p.name}</p>
                       <p className="text-[10px]"
                         style={{ color: dark ? "rgba(255,255,255,.35)" : "rgba(49,46,129,.44)" }}>{p.sold} terjual</p>
                     </div>
-                    <p className="text-[12px] font-black flex-shrink-0"
+                    <p className="text-[11px] sm:text-[12px] font-black flex-shrink-0 tabular-nums"
                       style={{ color: dark ? "#818cf8" : "#4f46e5" }}>{formatRupiah(p.price)}</p>
                   </Link>
                 ))}

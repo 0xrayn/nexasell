@@ -15,6 +15,10 @@ NexaSell adalah aplikasi **Point of Sale (POS) fullstack modern** berbasis Next.
 - Halaman detail produk dengan pilihan jumlah
 - Keranjang belanja persisten (Context API)
 - Halaman checkout dengan ringkasan order
+- Halaman pembayaran dengan pilihan metode (Bank Transfer VA, E-Wallet, QRIS, Kartu Kredit, COD)
+- Countdown timer batas waktu pembayaran
+- Copy VA number & QR code display
+- Status checker (polling-ready untuk Midtrans webhook)
 
 ### 🖥️ Admin Dashboard (`/admin`)
 - Ringkasan revenue, transaksi, dan produk terlaris
@@ -122,6 +126,7 @@ npm start
 | `/admin` | Dashboard admin dengan chart revenue |
 | `/admin/products` | Manajemen produk |
 | `/cashier` | Panel transaksi kasir |
+| `/customer/payment` | Halaman pembayaran (Midtrans-ready) |
 
 ---
 
@@ -138,7 +143,11 @@ npm start
 - [ ] Notifikasi real-time (WebSocket)
 - [ ] PWA support (offline mode)
 - [ ] Multi-bahasa (i18n)
-- [ ] Integrasi payment gateway (Midtrans / Xendit)
+- [ ] Integrasi Midtrans Snap (frontend sudah siap, tinggal backend)
+  - `POST /api/payment/create` → dapatkan `snap_token`
+  - Load Midtrans Snap JS di `layout.tsx`
+  - Handle webhook `POST /api/payment/notification` untuk update status order
+  - Dukung: Virtual Account, GoPay, QRIS, Kartu Kredit
 
 ---
 
