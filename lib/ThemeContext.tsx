@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useLayoutEffect } from "react";
 
 interface ThemeContextType {
   dark: boolean;
@@ -8,15 +8,23 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType>({ dark: false, toggle: () => {} });
 
+// useLayoutEffect di browser, useEffect di server (SSR-safe)
+const useIsomorphicLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
+
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [dark, setDark] = useState(false);
 
-  useEffect(() => {
-    const stored = localStorage.getItem("nexasell-theme");
-    if (stored === "dark") {
-      setDark(true);
-      document.documentElement.classList.add("dark");
-    }
+  // useLayoutEffect: runs synchronously after DOM mutations but BEFORE paint
+  // This means no visible flash — state syncs with what inline script already set
+  useIsomorphicLayoutEffect(() => {
+    const isDark = document.documentElement.classList.contains("dark");
+    setDark(isDark);
+
+    // Add transition class AFTER first sync — so initial load has no transition
+    const timer = setTimeout(() => {
+      document.documentElement.classList.add("theme-ready");
+    }, 100);
+    return () => clearTimeout(timer);
   }, []);
 
   const toggle = () => {

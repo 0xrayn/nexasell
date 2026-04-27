@@ -24,10 +24,11 @@ const quickActions = [
 ];
 
 export default function AdminDashboard() {
-  const [now, setNow] = useState(new Date());
+  const [now, setNow] = useState<Date | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
+    setNow(new Date());
     const t = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(t);
   }, []);
@@ -37,8 +38,8 @@ export default function AdminDashboard() {
     setTimeout(() => setRefreshing(false), 1200);
   };
 
-  const timeStr = now.toLocaleTimeString("id-ID", { hour:"2-digit", minute:"2-digit", second:"2-digit" });
-  const dateStr = now.toLocaleDateString("id-ID", { weekday:"long", day:"numeric", month:"long", year:"numeric" });
+  const timeStr = now?.toLocaleTimeString("id-ID", { hour:"2-digit", minute:"2-digit", second:"2-digit" }) ?? "--:--:--";
+  const dateStr = now?.toLocaleDateString("id-ID", { weekday:"long", day:"numeric", month:"long", year:"numeric" }) ?? "";
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 w-full max-w-full" style={{ background: "var(--bg)", minHeight: "100vh" }}>

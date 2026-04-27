@@ -1,162 +1,276 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, Zap, ShieldCheck, Lock, Mail } from "lucide-react";
+import { Eye, EyeOff, Zap, Lock, Mail, ArrowRight, BarChart2, Package, TrendingUp, Users, CheckCircle2, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 
-export default function AdminLogin() {
+export default function AdminLoginPage() {
   const router = useRouter();
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({ email: "admin@nexasell.id", password: "admin123" });
+  const [done, setDone] = useState(false);
+  const [tab, setTab] = useState<"login" | "register">("login");
+  const [form, setForm] = useState({ name: "", email: "admin@nexasell.id", password: "admin123", confirm: "" });
+  const [err, setErr] = useState("");
+  const [focused, setFocused] = useState<string | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      router.push("/admin");
-    }, 1200);
+    if (tab === "register" && form.password !== form.confirm) {
+      setErr("Password tidak cocok"); return;
+    }
+    setErr(""); setLoading(true);
+    setTimeout(() => { setDone(true); }, 1000);
+    setTimeout(() => { router.push("/admin"); }, 1700);
   };
 
+  const stats = [
+    { icon: BarChart2,  label: "Revenue",   value: "Rp 141M", color: "#818cf8" },
+    { icon: Package,    label: "Produk",     value: "16+",     color: "#34d399" },
+    { icon: TrendingUp, label: "Transaksi",  value: "1.6K",    color: "#f472b6" },
+    { icon: Users,      label: "Pelanggan",  value: "1.2K",    color: "#fbbf24" },
+  ];
+
   return (
-    <div className="min-h-screen flex" style={{ background: "var(--bg)" }}>
-      {/* Left panel — branding */}
-      <div className="hidden lg:flex flex-col justify-between w-[45%] p-12 relative overflow-hidden"
-        style={{ background: "linear-gradient(135deg,#09061e 0%,#130a36 50%,#0a1128 100%)" }}>
-        {/* Ambient blobs */}
-        <div className="absolute top-0 left-0 w-96 h-96 rounded-full pointer-events-none"
-          style={{ background: "radial-gradient(circle,rgba(99,102,241,0.2) 0%,transparent 70%)", transform: "translate(-30%,-30%)" }} />
-        <div className="absolute bottom-0 right-0 w-64 h-64 rounded-full pointer-events-none"
-          style={{ background: "radial-gradient(circle,rgba(139,92,246,0.18) 0%,transparent 70%)", transform: "translate(20%,20%)" }} />
-        {/* Rings */}
-        <div className="absolute top-1/2 left-1/2 w-80 h-80 rounded-full border border-white/5"
-          style={{ transform: "translate(-50%,-50%)" }} />
-        <div className="absolute top-1/2 left-1/2 w-52 h-52 rounded-full border border-indigo-500/15"
-          style={{ transform: "translate(-50%,-50%)" }} />
+    <div className="min-h-screen flex overflow-hidden" style={{ background: "var(--bg)", fontFamily: "Outfit, sans-serif" }}>
+      <style>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+        @keyframes ringSpin { to { transform: translate(-50%,-50%) rotate(360deg); } }
+        @keyframes ringSpinRev { to { transform: translate(-50%,-50%) rotate(-360deg); } }
+        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+        @keyframes fadeInUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes scaleIn { from{opacity:0;transform:scale(0.88)} to{opacity:1;transform:scale(1)} }
+        @keyframes checkPop { 0%{transform:scale(0) rotate(-15deg);opacity:0} 60%{transform:scale(1.2)} 100%{transform:scale(1) rotate(0);opacity:1} }
+        @keyframes shimmer { from{background-position:-200% center} to{background-position:200% center} }
+        @keyframes slideLeft { from{opacity:0;transform:translateX(-32px)} to{opacity:1;transform:translateX(0)} }
+        @keyframes slideRight { from{opacity:0;transform:translateX(32px)} to{opacity:1;transform:translateX(0)} }
+        .stat-card { transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s ease; }
+        .stat-card:hover { transform: translateY(-4px) scale(1.02); }
+        .btn-primary { transition: transform 0.15s ease, box-shadow 0.15s ease; }
+        .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(99,102,241,0.55) !important; }
+        .btn-primary:active:not(:disabled) { transform: translateY(0); }
+        .tab-btn { transition: all 0.25s cubic-bezier(0.4,0,0.2,1); }
+        .panel-l { animation: slideLeft 0.7s cubic-bezier(0.16,1,0.3,1) both; }
+        .panel-r { animation: slideRight 0.7s cubic-bezier(0.16,1,0.3,1) 0.08s both; }
+        .f1 { animation: fadeInUp 0.5s cubic-bezier(0.16,1,0.3,1) both; }
+        .f2 { animation: fadeInUp 0.5s cubic-bezier(0.16,1,0.3,1) 0.07s both; }
+        .f3 { animation: fadeInUp 0.5s cubic-bezier(0.16,1,0.3,1) 0.13s both; }
+        .f4 { animation: fadeInUp 0.5s cubic-bezier(0.16,1,0.3,1) 0.18s both; }
+        .f5 { animation: fadeInUp 0.5s cubic-bezier(0.16,1,0.3,1) 0.22s both; }
+        .f6 { animation: fadeInUp 0.5s cubic-bezier(0.16,1,0.3,1) 0.27s both; }
+        .icon-anim { transition: color 0.2s; }
+        .eye-btn { transition: color 0.2s; }
+        .eye-btn:hover { color: #6366f1 !important; }
+        .link-go { transition: color 0.2s; }
+        .link-go:hover { color: #34d399 !important; }
+      `}</style>
 
-        <div className="relative z-10">
-          <Link href="/" className="inline-flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl flex items-center justify-center"
-              style={{ background: "linear-gradient(135deg,#6366f1,#8b5cf6)", boxShadow: "0 4px 20px rgba(99,102,241,0.45)" }}>
-              <Zap className="w-5 h-5 text-white" />
+      {/* LEFT PANEL */}
+      <div className="hidden lg:flex flex-col w-[52%] relative overflow-hidden panel-l"
+        style={{ background: "linear-gradient(145deg,#06040f 0%,#0d0826 45%,#060e1c 100%)" }}>
+
+        <div className="absolute inset-0 pointer-events-none">
+          <div style={{ position:"absolute", top:"-15%", left:"-8%", width:520, height:520, borderRadius:"50%",
+            background:"radial-gradient(circle,rgba(99,102,241,0.25) 0%,transparent 65%)", animation:"float 8s ease-in-out infinite" }} />
+          <div style={{ position:"absolute", bottom:"-10%", right:"-5%", width:400, height:400, borderRadius:"50%",
+            background:"radial-gradient(circle,rgba(139,92,246,0.2) 0%,transparent 65%)", animation:"float 10s ease-in-out infinite reverse" }} />
+          <div style={{ position:"absolute", inset:0, opacity:0.035,
+            backgroundImage:"linear-gradient(rgba(255,255,255,1) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,1) 1px,transparent 1px)",
+            backgroundSize:"56px 56px" }} />
+          <div style={{ position:"absolute", top:"42%", left:"52%", width:400, height:400, borderRadius:"50%",
+            border:"1px solid rgba(99,102,241,0.13)", transform:"translate(-50%,-50%)", animation:"ringSpin 30s linear infinite" }} />
+          <div style={{ position:"absolute", top:"42%", left:"52%", width:250, height:250, borderRadius:"50%",
+            border:"1px dashed rgba(139,92,246,0.18)", transform:"translate(-50%,-50%)", animation:"ringSpinRev 18s linear infinite" }} />
+          <div style={{ position:"absolute", top:"42%", left:"52%", width:130, height:130, borderRadius:"50%",
+            border:"1px solid rgba(99,102,241,0.1)", transform:"translate(-50%,-50%)", animation:"ringSpin 12s linear infinite" }} />
+        </div>
+
+        <div className="relative z-10 flex flex-col h-full p-14">
+          <Link href="/" className="inline-flex items-center gap-3 group w-fit" style={{ animation:"fadeInUp 0.5s ease both" }}>
+            <div className="w-11 h-11 rounded-2xl flex items-center justify-center"
+              style={{ background:"linear-gradient(135deg,#6366f1,#8b5cf6)", boxShadow:"0 4px 24px rgba(99,102,241,0.6)",
+                transition:"transform 0.3s", transform:"scale(1)" }}
+              onMouseEnter={e=>(e.currentTarget.style.transform="scale(1.1)")}
+              onMouseLeave={e=>(e.currentTarget.style.transform="scale(1)")}>
+              <Zap className="w-5 h-5 text-white" strokeWidth={2.5} />
             </div>
-            <span className="font-black text-xl text-white" style={{ fontFamily: "Outfit,sans-serif" }}>
-              Nexa<span style={{ color: "#818cf8" }}>Sell</span>
-            </span>
+            <span className="font-black text-2xl text-white tracking-tight">Nexa<span style={{ color:"#818cf8" }}>Sell</span></span>
           </Link>
-        </div>
 
-        <div className="relative z-10">
-          <div className="w-14 h-14 rounded-3xl flex items-center justify-center mb-6"
-            style={{ background: "rgba(99,102,241,0.15)", border: "1px solid rgba(99,102,241,0.3)" }}>
-            <ShieldCheck className="w-7 h-7" style={{ color: "#818cf8" }} />
+          <div className="mt-14 flex-1 flex flex-col justify-center">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full mb-6 w-fit"
+              style={{ background:"rgba(99,102,241,0.15)", border:"1px solid rgba(99,102,241,0.3)", animation:"fadeInUp 0.5s ease 0.1s both" }}>
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" style={{ animation:"pulse 2s ease-in-out infinite" }} />
+              <ShieldCheck className="w-3 h-3" style={{ color:"rgba(255,255,255,0.6)" }} />
+              <span className="text-[10px] font-bold tracking-widest uppercase" style={{ color:"rgba(255,255,255,0.7)" }}>Admin Portal</span>
+            </div>
+
+            <h2 className="font-black leading-tight mb-4" style={{ fontSize:"clamp(28px,3.5vw,42px)", color:"#fff", animation:"fadeInUp 0.5s ease 0.15s both" }}>
+              Kelola Bisnis<br />
+              <span style={{ background:"linear-gradient(90deg,#a5b4fc,#c084fc,#818cf8)", backgroundSize:"200%",
+                WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", animation:"shimmer 4s linear infinite" }}>
+                Lebih Efisien.
+              </span>
+            </h2>
+            <p className="text-sm leading-relaxed max-w-xs mb-10" style={{ color:"rgba(255,255,255,0.4)", animation:"fadeInUp 0.5s ease 0.2s both" }}>
+              Dashboard lengkap untuk memantau penjualan, mengelola produk, dan menganalisis performa toko secara real-time.
+            </p>
+
+            <div className="grid grid-cols-2 gap-3" style={{ animation:"fadeInUp 0.5s ease 0.25s both" }}>
+              {stats.map(({ icon: Icon, label, value, color }) => (
+                <div key={label} className="stat-card p-4 rounded-2xl cursor-default"
+                  style={{ background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.08)", backdropFilter:"blur(12px)" }}>
+                  <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-3"
+                    style={{ background:`${color}18`, border:`1px solid ${color}28` }}>
+                    <Icon className="w-4 h-4" style={{ color }} />
+                  </div>
+                  <p className="font-black text-xl text-white leading-none">{value}</p>
+                  <p className="text-[10px] mt-1 font-semibold" style={{ color:"rgba(255,255,255,0.35)" }}>{label}</p>
+                </div>
+              ))}
+            </div>
           </div>
-          <h2 className="text-3xl font-black text-white mb-3" style={{ fontFamily: "Outfit,sans-serif" }}>
-            Admin Panel
-          </h2>
-          <p className="text-sm leading-relaxed max-w-xs" style={{ color: "rgba(255,255,255,0.45)" }}>
-            Kelola produk, pantau penjualan, dan analisis performa toko Anda dalam satu dashboard.
-          </p>
 
-          <div className="mt-8 grid grid-cols-2 gap-3">
-            {[
-              { v: "16+", l: "Produk Aktif" },
-              { v: "1.6K", l: "Transaksi" },
-              { v: "Rp141M", l: "Revenue" },
-              { v: "1.2K", l: "Pelanggan" },
-            ].map(({ v, l }) => (
-              <div key={l} className="p-3 rounded-2xl" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>
-                <p className="text-base font-black text-white" style={{ fontFamily: "Outfit,sans-serif" }}>{v}</p>
-                <p className="text-[10px]" style={{ color: "rgba(255,255,255,0.4)" }}>{l}</p>
-              </div>
-            ))}
-          </div>
+          <p className="text-[11px]" style={{ color:"rgba(255,255,255,0.18)" }}>© 2026 NexaSell · Admin Portal v1.0</p>
         </div>
-
-        <p className="relative z-10 text-[11px]" style={{ color: "rgba(255,255,255,0.25)" }}>
-          © 2026 NexaSell · Admin Portal
-        </p>
       </div>
 
-      {/* Right panel — form */}
-      <div className="flex-1 flex items-center justify-center px-4 sm:px-8">
-        <div className="w-full max-w-md">
-          {/* Mobile logo */}
-          <div className="flex lg:hidden items-center gap-3 mb-8">
+      {/* RIGHT PANEL */}
+      <div className="flex-1 flex items-center justify-center px-6 sm:px-10 py-12 panel-r relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none" style={{
+          backgroundImage:"radial-gradient(circle at 80% 20%, rgba(99,102,241,0.06) 0%, transparent 50%), radial-gradient(circle at 20% 80%, rgba(139,92,246,0.04) 0%, transparent 50%)"
+        }} />
+
+        <div className="w-full max-w-md relative z-10">
+          <Link href="/" className="flex lg:hidden items-center gap-2.5 mb-8">
             <div className="w-9 h-9 rounded-2xl flex items-center justify-center"
-              style={{ background: "linear-gradient(135deg,#6366f1,#8b5cf6)", boxShadow: "0 4px 16px rgba(99,102,241,0.35)" }}>
-              <Zap className="w-4 h-4 text-white" />
+              style={{ background:"linear-gradient(135deg,#6366f1,#8b5cf6)", boxShadow:"0 3px 14px rgba(99,102,241,0.4)" }}>
+              <Zap className="w-4 h-4 text-white" strokeWidth={2.5} />
             </div>
-            <span className="font-black text-xl" style={{ color: "var(--text)", fontFamily: "Outfit,sans-serif" }}>
-              Nexa<span style={{ color: "#6366f1" }}>Sell</span>
-            </span>
-          </div>
+            <span className="font-black text-xl" style={{ color:"var(--text)" }}>Nexa<span style={{ color:"#6366f1" }}>Sell</span></span>
+          </Link>
 
-          <div className="mb-8">
-            <h1 className="font-black text-2xl sm:text-3xl mb-2" style={{ color: "var(--text)", fontFamily: "Outfit,sans-serif" }}>
-              Selamat Datang 👋
-            </h1>
-            <p className="text-sm" style={{ color: "var(--text2)" }}>Masuk ke Admin Panel NexaSell</p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Email */}
-            <div>
-              <label className="block text-xs font-bold mb-2" style={{ color: "var(--text2)" }}>Email</label>
-              <div className="relative">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--text3)" }} />
-                <input type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} required
-                  className="w-full pl-11 pr-4 py-3 rounded-2xl text-sm font-medium outline-none transition-all"
-                  style={{ background: "var(--surface2)", border: "1.5px solid var(--border)", color: "var(--text)" }}
-                  onFocus={e => (e.target.style.borderColor = "#6366f1")}
-                  onBlur={e => (e.target.style.borderColor = "var(--border)")} />
+          {done ? (
+            <div className="text-center" style={{ animation:"scaleIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both" }}>
+              <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4"
+                style={{ background:"rgba(16,185,129,0.1)", border:"2px solid rgba(16,185,129,0.3)" }}>
+                <CheckCircle2 className="w-10 h-10" style={{ color:"#10b981", animation:"checkPop 0.5s cubic-bezier(0.34,1.56,0.64,1) both" }} />
               </div>
+              <p className="font-black text-xl mb-1" style={{ color:"var(--text)" }}>Berhasil masuk!</p>
+              <p className="text-sm" style={{ color:"var(--text2)" }}>Mengalihkan ke dashboard...</p>
+            </div>
+          ) : (<>
+            <div className="mb-7 f1">
+              <h1 className="font-black text-2xl sm:text-3xl mb-1.5" style={{ color:"var(--text)" }}>
+                {tab === "login" ? "Selamat Datang 👋" : "Buat Akun Baru"}
+              </h1>
+              <p className="text-sm" style={{ color:"var(--text2)" }}>
+                {tab === "login" ? "Masuk ke Admin Panel NexaSell" : "Daftar sebagai Admin baru"}
+              </p>
             </div>
 
-            {/* Password */}
-            <div>
-              <label className="block text-xs font-bold mb-2" style={{ color: "var(--text2)" }}>Password</label>
-              <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--text3)" }} />
-                <input type={show ? "text" : "password"} value={form.password} onChange={e => setForm(f => ({ ...f, password: e.target.value }))} required
-                  className="w-full pl-11 pr-12 py-3 rounded-2xl text-sm font-medium outline-none transition-all"
-                  style={{ background: "var(--surface2)", border: "1.5px solid var(--border)", color: "var(--text)" }}
-                  onFocus={e => (e.target.style.borderColor = "#6366f1")}
-                  onBlur={e => (e.target.style.borderColor = "var(--border)")} />
-                <button type="button" onClick={() => setShow(s => !s)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center"
-                  style={{ color: "var(--text3)" }}>
-                  {show ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            <div className="flex p-1 rounded-2xl mb-6 f2" style={{ background:"var(--surface2)", border:"1px solid var(--border)" }}>
+              {(["login","register"] as const).map(t => (
+                <button key={t} onClick={() => setTab(t)} className="tab-btn flex-1 py-2.5 rounded-xl text-sm font-bold"
+                  style={tab === t
+                    ? { background:"linear-gradient(135deg,#6366f1,#7c3aed)", color:"#fff", boxShadow:"0 2px 12px rgba(99,102,241,0.4)" }
+                    : { color:"var(--text2)", background:"transparent" }}>
+                  {t === "login" ? "Masuk" : "Daftar"}
                 </button>
-              </div>
-              <div className="flex justify-end mt-1.5">
-                <button type="button" className="text-xs font-semibold" style={{ color: "#6366f1" }}>Lupa password?</button>
-              </div>
+              ))}
             </div>
 
-            {/* Hint */}
-            <div className="p-3 rounded-2xl text-xs" style={{ background: "rgba(99,102,241,0.07)", border: "1px solid rgba(99,102,241,0.15)", color: "var(--text2)" }}>
-              Demo: <span className="font-bold" style={{ color: "#6366f1" }}>admin@nexasell.id</span> / <span className="font-bold" style={{ color: "#6366f1" }}>admin123</span>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {tab === "register" && (
+                <div className="f3">
+                  <label className="block text-xs font-bold mb-2" style={{ color:"var(--text2)" }}>Nama Lengkap</label>
+                  <input type="text" value={form.name} onChange={e=>setForm(f=>({...f,name:e.target.value}))}
+                    placeholder="John Doe" required
+                    className="w-full px-4 py-3 rounded-2xl text-sm font-medium outline-none"
+                    style={{ background:"var(--surface2)", border:`1.5px solid ${focused==="name"?"#6366f1":"var(--border)"}`,
+                      color:"var(--text)", transition:"border-color 0.2s, box-shadow 0.2s",
+                      boxShadow:focused==="name"?"0 0 0 3px rgba(99,102,241,0.12)":"none" }}
+                    onFocus={()=>setFocused("name")} onBlur={()=>setFocused(null)} />
+                </div>
+              )}
+
+              <div className="f3">
+                <label className="block text-xs font-bold mb-2" style={{ color:"var(--text2)" }}>Email</label>
+                <div className="relative">
+                  <Mail className="icon-anim absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none"
+                    style={{ color: focused==="email"?"#6366f1":"var(--text3)" }} />
+                  <input type="email" value={form.email} onChange={e=>setForm(f=>({...f,email:e.target.value}))}
+                    placeholder="admin@email.com" required
+                    className="w-full pl-11 pr-4 py-3 rounded-2xl text-sm font-medium outline-none"
+                    style={{ background:"var(--surface2)", border:`1.5px solid ${focused==="email"?"#6366f1":"var(--border)"}`,
+                      color:"var(--text)", transition:"border-color 0.2s, box-shadow 0.2s",
+                      boxShadow:focused==="email"?"0 0 0 3px rgba(99,102,241,0.12)":"none" }}
+                    onFocus={()=>setFocused("email")} onBlur={()=>setFocused(null)} />
+                </div>
+              </div>
+
+              <div className="f4">
+                <label className="block text-xs font-bold mb-2" style={{ color:"var(--text2)" }}>Password</label>
+                <div className="relative">
+                  <Lock className="icon-anim absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none"
+                    style={{ color: focused==="pass"?"#6366f1":"var(--text3)" }} />
+                  <input type={show?"text":"password"} value={form.password} onChange={e=>setForm(f=>({...f,password:e.target.value}))}
+                    placeholder="Minimal 8 karakter" required
+                    className="w-full pl-11 pr-12 py-3 rounded-2xl text-sm font-medium outline-none"
+                    style={{ background:"var(--surface2)", border:`1.5px solid ${focused==="pass"?"#6366f1":"var(--border)"}`,
+                      color:"var(--text)", transition:"border-color 0.2s, box-shadow 0.2s",
+                      boxShadow:focused==="pass"?"0 0 0 3px rgba(99,102,241,0.12)":"none" }}
+                    onFocus={()=>setFocused("pass")} onBlur={()=>setFocused(null)} />
+                  <button type="button" onClick={()=>setShow(s=>!s)}
+                    className="eye-btn absolute right-3.5 top-1/2 -translate-y-1/2 p-1 rounded-lg" style={{ color:"var(--text3)" }}>
+                    {show ? <EyeOff className="w-4 h-4"/> : <Eye className="w-4 h-4"/>}
+                  </button>
+                </div>
+              </div>
+
+              {tab === "register" && (
+                <div className="f4">
+                  <label className="block text-xs font-bold mb-2" style={{ color:"var(--text2)" }}>Konfirmasi Password</label>
+                  <div className="relative">
+                    <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color:"var(--text3)" }} />
+                    <input type={show?"text":"password"} value={form.confirm} onChange={e=>setForm(f=>({...f,confirm:e.target.value}))}
+                      placeholder="Ulangi password" required
+                      className="w-full pl-11 pr-4 py-3 rounded-2xl text-sm font-medium outline-none"
+                      style={{ background:"var(--surface2)", border:`1.5px solid ${err?"#ef4444":"var(--border)"}`, color:"var(--text)",
+                        transition:"border-color 0.2s" }}
+                      onFocus={()=>setFocused("conf")} onBlur={()=>setFocused(null)} />
+                  </div>
+                  {err && <p className="text-xs text-red-400 mt-1.5">⚠ {err}</p>}
+                </div>
+              )}
+
+              {tab === "login" && (
+                <div className="f4 p-3.5 rounded-2xl text-xs"
+                  style={{ background:"rgba(99,102,241,0.06)", border:"1px solid rgba(99,102,241,0.15)", color:"var(--text2)" }}>
+                  <span className="font-semibold">Demo:</span>{" "}
+                  <span className="font-black" style={{ color:"#818cf8" }}>admin@nexasell.id</span>
+                  {" / "}
+                  <span className="font-black" style={{ color:"#818cf8" }}>admin123</span>
+                </div>
+              )}
+
+              <button type="submit" disabled={loading} className="btn-primary f5 w-full py-3.5 rounded-2xl text-white font-black text-sm flex items-center justify-center gap-2"
+                style={{ background:"linear-gradient(135deg,#6366f1,#7c3aed)",
+                  boxShadow:"0 4px 20px rgba(99,102,241,0.4)", opacity:loading?0.85:1 }}>
+                {loading
+                  ? <><div className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white" style={{ animation:"spin 0.7s linear infinite" }} />Memproses...</>
+                  : <>{tab==="login"?"Masuk ke Admin Panel":"Buat Akun"} <ArrowRight className="w-4 h-4"/></>
+                }
+              </button>
+            </form>
+
+            <div className="mt-6 text-center f6">
+              <Link href="/cashier/login" className="link-go text-xs font-semibold" style={{ color:"#10b981" }}>
+                Pergi ke Cashier Station →
+              </Link>
             </div>
-
-            <button type="submit" disabled={loading}
-              className="w-full py-3.5 rounded-2xl text-white font-black text-sm flex items-center justify-center gap-2 transition-all active:scale-95"
-              style={{ background: "linear-gradient(135deg,#6366f1,#7c3aed)", boxShadow: "0 4px 20px rgba(99,102,241,0.4)", opacity: loading ? 0.8 : 1 }}>
-              {loading ? (
-                <>
-                  <div className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-                  Masuk...
-                </>
-              ) : "Masuk ke Admin Panel →"}
-            </button>
-          </form>
-
-          <div className="mt-6 text-center">
-            <Link href="/cashier/login" className="text-xs font-semibold" style={{ color: "#10b981" }}>
-              Pergi ke Cashier Station →
-            </Link>
-          </div>
+          </>)}
         </div>
       </div>
     </div>

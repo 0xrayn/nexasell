@@ -55,7 +55,7 @@ function UserDropdown() {
             ))}
           </div>
           <div style={{ borderTop:"1px solid var(--border)" }}>
-            <button onClick={()=>router.push("/cashier-login")}
+            <button onClick={()=>router.push("/cashier/login")}
               className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold"
               style={{ color:"#ef4444" }}
               onMouseEnter={e=>(e.currentTarget.style.background="rgba(239,68,68,0.06)")}
@@ -93,36 +93,57 @@ function SidebarContent({ isMobile=false }: { isMobile?:boolean }) {
 
   return (
     <div className="flex flex-col h-full" style={{ background:"var(--surface)",borderRight:"1px solid var(--border)" }}>
-      <div className="flex items-center h-16 px-3 gap-2.5 flex-shrink-0" style={{ borderBottom:"1px solid var(--border)" }}>
-        <Link href="/" onClick={close} className="flex-shrink-0">
-          <div className="w-9 h-9 rounded-2xl flex items-center justify-center"
-            style={{ background:"linear-gradient(135deg,#10b981,#06b6d4)",boxShadow:"0 3px 12px rgba(16,185,129,0.38)" }}>
-            <Zap className="w-4 h-4 text-white" strokeWidth={2.5}/>
-          </div>
-        </Link>
-        {!isCol && (
+
+      {isCol ? (
+        /* COLLAPSED: stacked layout so toggle button never gets clipped */
+        <div className="flex flex-col items-center pt-3 pb-2 gap-2 flex-shrink-0" style={{ borderBottom:"1px solid var(--border)" }}>
+          <Link href="/" className="block">
+            <div className="w-9 h-9 rounded-2xl flex items-center justify-center"
+              style={{ background:"linear-gradient(135deg,#10b981,#06b6d4)", boxShadow:"0 3px 12px rgba(16,185,129,0.38)" }}>
+              <Zap className="w-4 h-4 text-white" strokeWidth={2.5}/>
+            </div>
+          </Link>
+          <button onClick={toggle}
+            className="w-8 h-8 rounded-xl flex items-center justify-center"
+            style={{ background:"var(--surface2)", border:"1px solid var(--border)", transition:"background 0.15s, transform 0.2s" }}
+            title="Expand sidebar"
+            onMouseEnter={e=>{ e.currentTarget.style.background="rgba(16,185,129,0.1)"; e.currentTarget.style.transform="scale(1.1)"; }}
+            onMouseLeave={e=>{ e.currentTarget.style.background="var(--surface2)"; e.currentTarget.style.transform="scale(1)"; }}>
+            <ChevronRight className="w-3.5 h-3.5" style={{ color:"#10b981" }}/>
+          </button>
+        </div>
+      ) : (
+        /* EXPANDED: normal flex row */
+        <div className="flex items-center h-16 px-3 gap-2.5 flex-shrink-0" style={{ borderBottom:"1px solid var(--border)" }}>
+          <Link href="/" onClick={close} className="flex-shrink-0">
+            <div className="w-9 h-9 rounded-2xl flex items-center justify-center"
+              style={{ background:"linear-gradient(135deg,#10b981,#06b6d4)", boxShadow:"0 3px 12px rgba(16,185,129,0.38)" }}>
+              <Zap className="w-4 h-4 text-white" strokeWidth={2.5}/>
+            </div>
+          </Link>
           <div className="flex-1 min-w-0 overflow-hidden">
-            <p className="font-black text-[15px] leading-none" style={{ color:"var(--text)",fontFamily:"Outfit,sans-serif" }}>
+            <p className="font-black text-[15px] leading-none" style={{ color:"var(--text)", fontFamily:"Outfit,sans-serif" }}>
               Nexa<span style={{ color:"#10b981" }}>Sell</span>
             </p>
             <p className="text-[9px] font-bold tracking-[0.16em] uppercase mt-0.5" style={{ color:"var(--text3)" }}>Cashier Station</p>
           </div>
-        )}
-        {!isMobile && (
-          <button onClick={toggle}
-            className="flex-shrink-0 w-7 h-7 rounded-xl flex items-center justify-center ml-auto"
-            style={{ background:"var(--surface2)",border:"1px solid var(--border)" }}
-            title={isCol?"Expand":"Collapse"}>
-            {isCol?<ChevronRight className="w-3.5 h-3.5" style={{ color:"var(--text2)" }}/>:<ChevronLeft className="w-3.5 h-3.5" style={{ color:"var(--text2)" }}/>}
-          </button>
-        )}
-        {isMobile && (
-          <button onClick={close} className="ml-auto flex-shrink-0 w-7 h-7 rounded-xl flex items-center justify-center"
-            style={{ background:"var(--surface2)",border:"1px solid var(--border)" }}>
-            <X className="w-3.5 h-3.5" style={{ color:"var(--text2)" }}/>
-          </button>
-        )}
-      </div>
+          {!isMobile ? (
+            <button onClick={toggle}
+              className="flex-shrink-0 w-7 h-7 rounded-xl flex items-center justify-center"
+              style={{ background:"var(--surface2)", border:"1px solid var(--border)", transition:"background 0.15s, transform 0.2s" }}
+              title="Collapse sidebar"
+              onMouseEnter={e=>{ e.currentTarget.style.background="rgba(16,185,129,0.1)"; e.currentTarget.style.transform="scale(1.1)"; }}
+              onMouseLeave={e=>{ e.currentTarget.style.background="var(--surface2)"; e.currentTarget.style.transform="scale(1)"; }}>
+              <ChevronLeft className="w-3.5 h-3.5" style={{ color:"#10b981" }}/>
+            </button>
+          ) : (
+            <button onClick={close} className="ml-auto flex-shrink-0 w-7 h-7 rounded-xl flex items-center justify-center"
+              style={{ background:"var(--surface2)", border:"1px solid var(--border)" }}>
+              <X className="w-3.5 h-3.5" style={{ color:"var(--text2)" }}/>
+            </button>
+          )}
+        </div>
+      )}
 
       {!isCol && <p className="text-[9px] font-black uppercase tracking-[0.2em] px-4 pt-5 pb-1.5" style={{ color:"var(--text3)" }}>Navigation</p>}
       {isCol && <div className="h-3"/>}
@@ -168,8 +189,8 @@ export default function CashierSidebar() {
   const { collapsed, mobileOpen, setMobileOpen } = useSidebar();
   return (
     <>
-      <aside className="hidden lg:flex flex-col fixed left-0 top-0 h-screen z-30 sidebar-transition overflow-hidden"
-        style={{ width:collapsed?68:256 }}>
+      <aside className="hidden lg:flex flex-col fixed left-0 top-0 h-screen z-30 overflow-hidden"
+        style={{ width:collapsed?68:256, transition:"width 0.3s cubic-bezier(0.4,0,0.2,1)" }}>
         <SidebarContent/>
       </aside>
       <button onClick={()=>setMobileOpen(true)}

@@ -3,10 +3,11 @@ import Link from "next/link";
 import { ShoppingCart, Star, Heart } from "lucide-react";
 import type { Product } from "@/data/products";
 import { formatRupiah } from "@/lib/utils";
+import { memo } from "react";
 import { useCart } from "@/lib/CartContext";
 import { useState } from "react";
 
-export default function ProductCard({ product }: { product: Product }) {
+export default memo(function ProductCard({ product }: { product: Product }) {
   const { addItem } = useCart();
   const [flash, setFlash] = useState(false);
   const [liked, setLiked] = useState(false);
@@ -141,4 +142,4 @@ export default function ProductCard({ product }: { product: Product }) {
       </div>
     </div>
   );
-}
+});
