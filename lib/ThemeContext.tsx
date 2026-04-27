@@ -1,18 +1,20 @@
 "use client";
-import React, { createContext, useContext, useState, useEffect, useLayoutEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useLayoutEffect, useTransition } from "react";
 
 interface ThemeContextType {
   dark: boolean;
   toggle: () => void;
+  isPending: boolean;
 }
 
-const ThemeContext = createContext<ThemeContextType>({ dark: false, toggle: () => {} });
+const ThemeContext = createContext<ThemeContextType>({ dark: false, toggle: () => {}, isPending: false });
 
 // useLayoutEffect di browser, useEffect di server (SSR-safe)
 const useIsomorphicLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [dark, setDark] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   // useLayoutEffect: runs synchronously after DOM mutations but BEFORE paint
   // This means no visible flash — state syncs with what inline script already set
@@ -28,21 +30,23 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const toggle = () => {
-    setDark((prev) => {
-      const next = !prev;
-      if (next) {
-        document.documentElement.classList.add("dark");
-        localStorage.setItem("nexasell-theme", "dark");
-      } else {
-        document.documentElement.classList.remove("dark");
-        localStorage.setItem("nexasell-theme", "light");
-      }
-      return next;
+    // Apply class change immediately (synchronous — affects CSS vars instantly)
+    const next = !document.documentElement.classList.contains("dark");
+    if (next) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("nexasell-theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("nexasell-theme", "light");
+    }
+    // Defer the React state update so it doesn't block the browser paint
+    startTransition(() => {
+      setDark(next);
     });
   };
 
   return (
-    <ThemeContext.Provider value={{ dark, toggle }}>
+    <ThemeContext.Provider value={{ dark, toggle, isPending }}>
       {children}
     </ThemeContext.Provider>
   );

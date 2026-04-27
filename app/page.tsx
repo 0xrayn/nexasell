@@ -181,17 +181,58 @@ export default function HomePage() {
           <div className="ring-ccw w-full h-full rounded-full" />
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto w-full px-6 lg:px-12 py-10 lg:py-16"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr minmax(0,460px)",
-            gap: "3rem",
-            alignItems: "center",
-          }}>
+        <div className="relative z-10 max-w-7xl mx-auto w-full px-5 sm:px-8 lg:px-12 py-8 sm:py-12 lg:py-16 hero-grid-wrap">
+          <style>{`
+            .hero-grid-wrap {
+              display: grid;
+              grid-template-columns: 1fr;
+              gap: 2rem;
+              align-items: start;
+            }
+            @media (min-width: 900px) {
+              .hero-grid-wrap {
+                grid-template-columns: 1fr minmax(0, 460px);
+                gap: 3rem;
+                align-items: center;
+              }
+            }
+            .hero-right-panel { display: flex; }
+            @media (min-width: 900px) {
+              .hero-right-panel { display: flex; }
+            }
+            /* On mobile: side-by-side scroll for the two panels */
+            .hero-mobile-panels {
+              display: flex;
+              gap: 12px;
+              overflow-x: auto;
+              scroll-snap-type: x mandatory;
+              -webkit-overflow-scrolling: touch;
+              scrollbar-width: none;
+              padding-bottom: 4px;
+            }
+            .hero-mobile-panels::-webkit-scrollbar { display: none; }
+            .hero-mobile-panels > * {
+              flex-shrink: 0;
+              width: min(320px, 88vw);
+              scroll-snap-align: start;
+            }
+            @media (min-width: 900px) {
+              .hero-mobile-panels {
+                flex-direction: column;
+                overflow-x: visible;
+                scroll-snap-type: none;
+                padding-bottom: 0;
+              }
+              .hero-mobile-panels > * {
+                flex-shrink: 1;
+                width: 100%;
+              }
+            }
+          `}</style>
 
           {/* LEFT */}
           <div className="hero-left flex flex-col min-w-0">
-            <div className="inline-flex items-center gap-2.5 mb-8 px-4 py-2 rounded-full w-fit"
+            <div className="inline-flex items-center gap-2.5 mb-5 sm:mb-8 px-4 py-2 rounded-full w-fit"
               style={{
                 background: dark ? "rgba(255,255,255,.07)" : "rgba(255,255,255,.85)",
                 border: `1px solid ${dark ? "rgba(255,255,255,.14)" : "rgba(99,102,241,.30)"}`,
@@ -217,7 +258,7 @@ export default function HomePage() {
 
             <h1 className="font-black leading-[1.0] mb-6"
               style={{
-                fontSize: "clamp(2.8rem,5vw,4.5rem)",
+                fontSize: "clamp(2rem,6vw,4.5rem)",
                 fontFamily: "Outfit,sans-serif",
                 letterSpacing: "-.03em",
               }}>
@@ -225,12 +266,12 @@ export default function HomePage() {
               <span className="grad-text">Cerdas &amp; Hemat.</span>
             </h1>
 
-            <p className="text-base leading-relaxed mb-10 max-w-[420px]"
+            <p className="text-sm sm:text-base leading-relaxed mb-6 sm:mb-10 max-w-[420px]"
               style={{ color: dark ? "rgba(255,255,255,.45)" : "rgba(49,46,129,.55)" }}>
               Ribuan produk pilihan dari 6 kategori. Harga transparan, kualitas terjamin — pengiriman cepat ke seluruh Indonesia.
             </p>
 
-            <div className="search-wrap flex items-center gap-2 p-1.5 rounded-2xl mb-10 max-w-[460px]"
+            <div className="search-wrap flex items-center gap-2 p-1.5 rounded-2xl mb-8 sm:mb-10 w-full sm:max-w-[460px]"
               style={{
                 background: dark ? "rgba(255,255,255,.07)" : "rgba(255,255,255,.95)",
                 border: `1.5px solid ${dark ? "rgba(255,255,255,.12)" : "rgba(99,102,241,.28)"}`,
@@ -266,7 +307,7 @@ export default function HomePage() {
               </button>
             </div>
 
-            <div className="flex gap-3 flex-wrap">
+            <div className="flex gap-2 flex-wrap sm:gap-3">
               {[
                 { icon: ShoppingBag, v: `${products.length}+`, l: "Produk", a: "#6366f1" },
                 { icon: Star, v: "4.8★", l: "Rating", a: "#f59e0b" },
@@ -295,8 +336,8 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* RIGHT */}
-          <div className="hero-right flex flex-col gap-3" style={{ minWidth: 0 }}>
+          {/* RIGHT — visible on all screen sizes */}
+          <div className="hero-right hero-right-panel hero-mobile-panels flex-col gap-3" style={{ minWidth: 0 }}>
             {/* Flash Sale panel */}
             <div className="rounded-3xl overflow-hidden"
               style={{
@@ -437,10 +478,10 @@ export default function HomePage() {
 
       {/* TRUST BADGES */}
       <div className="trust-row max-w-7xl mx-auto w-full px-6 lg:px-12 py-8">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
           {trustBadges.map(({ icon: Icon, label, sub, color }) => (
             <div key={label}
-              className="trust-card flex items-center gap-3 px-4 py-4 rounded-2xl cursor-default"
+              className="trust-card flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-3 sm:py-4 rounded-2xl cursor-default"
               style={{
                 background: dark ? "rgba(255,255,255,.04)" : "rgba(255,255,255,.85)",
                 border: `1px solid ${dark ? "rgba(255,255,255,.08)" : `${color}28`}`,

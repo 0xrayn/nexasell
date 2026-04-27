@@ -38,10 +38,20 @@
 html { overflow-x: hidden; }
 *, *::before, *::after { box-sizing: border-box; }
 
-/* Smooth theme switching — only AFTER .theme-ready added (100ms after mount) */
-html.theme-ready body,
-html.theme-ready body *:not(script):not(style) {
-  transition: background 0.22s ease, color 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease !important;
+/* Smooth theme switching — targeted only, NOT wildcard selector (wildcard causes lag) */
+html.theme-ready body {
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+html.theme-ready .theme-transition {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Prevent layout shift during theme toggle */
+html {
+  color-scheme: light;
+}
+html.dark {
+  color-scheme: dark;
 }
 
 body {

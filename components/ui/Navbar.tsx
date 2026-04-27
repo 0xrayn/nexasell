@@ -31,31 +31,32 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", fn);
   }, []);
 
-
+  // close mobile menu on route change
+  useEffect(() => { setMobileOpen(false); }, [pathname]);
 
   const handleNavSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const q = navSearch.trim();
     if (!q) return;
-    /* Navigate to homepage, then after mount the homepage search will take the query.
-       We use a custom event that page.tsx can listen to, or simply push with hash */
     if (pathname === "/") {
-      /* If already on homepage, dispatch a custom event that page.tsx handles */
       window.dispatchEvent(new CustomEvent("navbar-search", { detail: q }));
       document.getElementById("products-section")?.scrollIntoView({ behavior:"smooth" });
     } else {
       router.push(`/?q=${encodeURIComponent(q)}`);
     }
     setNavSearch("");
+    setMobileOpen(false);
   };
+
+  const navBg = dark
+    ? scrolled ? "rgba(7,5,15,.97)"  : "rgba(7,5,15,.90)"
+    : scrolled ? "rgba(255,255,255,.98)" : "rgba(255,255,255,.92)";
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50">
+      <header style={{ position:"fixed", top:0, left:0, right:0, zIndex:100 }}>
         <div style={{
-          background: dark
-            ? scrolled ? "rgba(7,5,15,.97)"  : "rgba(7,5,15,.90)"
-            : scrolled ? "rgba(255,255,255,.98)" : "rgba(255,255,255,.92)",
+          background: navBg,
           backdropFilter: "blur(24px) saturate(180%)",
           WebkitBackdropFilter: "blur(24px) saturate(180%)",
           borderBottom: `1px solid ${scrolled ? "var(--border2)" : "var(--border)"}`,
@@ -64,104 +65,123 @@ export default function Navbar() {
             : "none",
           transition: "background .25s, box-shadow .25s, border-color .25s",
         }}>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6">
-            <div className="flex items-center h-[65px] gap-3">
+          <div style={{ maxWidth:1280, margin:"0 auto", padding:"0 16px" }}>
+            <div style={{ display:"flex", alignItems:"center", height:60, gap:10 }}>
 
               {/* Logo */}
-              <Link href="/" className="flex items-center gap-2.5 flex-shrink-0">
-                <div className="w-8 h-8 rounded-xl flex items-center justify-center"
-                  style={{ background:"linear-gradient(135deg,#6366f1,#8b5cf6)", boxShadow:"0 3px 12px rgba(99,102,241,.40)" }}>
-                  <Zap className="w-4 h-4 text-white" strokeWidth={2.5}/>
+              <Link href="/" style={{ display:"flex", alignItems:"center", gap:9, flexShrink:0, textDecoration:"none" }}>
+                <div style={{
+                  width:32, height:32, borderRadius:10,
+                  background:"linear-gradient(135deg,#6366f1,#8b5cf6)",
+                  boxShadow:"0 3px 12px rgba(99,102,241,.40)",
+                  display:"flex", alignItems:"center", justifyContent:"center",
+                }}>
+                  <Zap style={{ width:16, height:16, color:"#fff", strokeWidth:2.5 }}/>
                 </div>
-                <p className="font-black text-[17px] leading-none hidden sm:block"
-                  style={{ color:"var(--text)", fontFamily:"Outfit,sans-serif" }}>
+                <span style={{
+                  fontWeight:900, fontSize:17, lineHeight:1,
+                  color:"var(--text)", fontFamily:"Outfit,sans-serif",
+                }}>
                   Nexa<span style={{ color:"#6366f1" }}>Sell</span>
-                </p>
+                </span>
               </Link>
 
-              {/* Desktop search — functional */}
-              <form onSubmit={handleNavSearch} className="hidden lg:flex flex-1 max-w-xs mx-4">
-                <div className="relative w-full flex items-center">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none"
-                    style={{ color:"var(--text3)" }}/>
+              {/* Desktop search */}
+              <form onSubmit={handleNavSearch} style={{ display:"none", flex:1, maxWidth:260, margin:"0 12px" }} className="nav-search-desktop">
+                <div style={{ position:"relative", width:"100%" }}>
+                  <Search style={{ position:"absolute", left:10, top:"50%", transform:"translateY(-50%)", width:14, height:14, color:"var(--text3)", pointerEvents:"none" }}/>
                   <input
                     ref={inputRef}
                     type="text"
                     placeholder="Cari produk…"
                     value={navSearch}
                     onChange={e=>setNavSearch(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 rounded-xl text-xs font-medium outline-none"
                     style={{
-                      background:"var(--surface2)",
-                      border:"1px solid var(--border)",
-                      color:"var(--text)",
+                      width:"100%", paddingLeft:32, paddingRight:navSearch ? 60 : 12,
+                      paddingTop:7, paddingBottom:7,
+                      borderRadius:12, fontSize:12, fontWeight:600,
+                      outline:"none", background:"var(--surface2)",
+                      border:"1px solid var(--border)", color:"var(--text)",
                       transition:"border-color .2s, box-shadow .2s",
                     }}
-                    onFocus={e=>{e.target.style.borderColor="#6366f1";e.target.style.boxShadow="0 0 0 3px rgba(99,102,241,.15)";}}
-                    onBlur={e=>{e.target.style.borderColor="var(--border)";e.target.style.boxShadow="none";}}
+                    onFocus={e=>{ e.target.style.borderColor="#6366f1"; e.target.style.boxShadow="0 0 0 3px rgba(99,102,241,.15)"; }}
+                    onBlur={e=>{ e.target.style.borderColor="var(--border)"; e.target.style.boxShadow="none"; }}
                   />
                   {navSearch && (
-                    <button type="submit"
-                      className="absolute right-2 top-1/2 -translate-y-1/2 px-2.5 py-1 rounded-lg text-[10px] font-black text-white"
-                      style={{ background:"linear-gradient(135deg,#6366f1,#7c3aed)" }}>
-                      Cari
-                    </button>
+                    <button type="submit" style={{
+                      position:"absolute", right:6, top:"50%", transform:"translateY(-50%)",
+                      padding:"3px 8px", borderRadius:8, fontSize:10, fontWeight:900,
+                      color:"#fff", border:"none", cursor:"pointer",
+                      background:"linear-gradient(135deg,#6366f1,#7c3aed)",
+                    }}>Cari</button>
                   )}
                 </div>
               </form>
 
-              {/* Role nav */}
-              <nav className="hidden md:flex items-center gap-0.5 p-1 rounded-2xl ml-auto"
-                style={{ background:"var(--surface2)", border:"1px solid var(--border)" }}>
+              {/* Desktop role nav */}
+              <nav style={{ display:"none", alignItems:"center", gap:2, padding:4, borderRadius:18, marginLeft:"auto", background:"var(--surface2)", border:"1px solid var(--border)" }} className="nav-roles-desktop">
                 {roles.map(({ href, label, icon:Icon, match }) => {
                   const active = match(pathname);
                   return (
-                    <Link key={href} href={href}
-                      className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold"
-                      style={{
-                        background: active ? "linear-gradient(135deg,#6366f1,#8b5cf6)" : "transparent",
-                        color: active ? "#fff" : "var(--text2)",
-                        boxShadow: active ? "0 2px 10px rgba(99,102,241,.38)" : "none",
-                        transition: "all .2s",
-                      }}>
-                      <Icon className="w-3 h-3"/>{label}
+                    <Link key={href} href={href} style={{
+                      display:"flex", alignItems:"center", gap:6,
+                      padding:"6px 14px", borderRadius:14,
+                      fontSize:12, fontWeight:700, textDecoration:"none",
+                      background: active ? "linear-gradient(135deg,#6366f1,#8b5cf6)" : "transparent",
+                      color: active ? "#fff" : "var(--text2)",
+                      boxShadow: active ? "0 2px 10px rgba(99,102,241,.38)" : "none",
+                      transition:"all .2s",
+                    }}>
+                      <Icon style={{ width:13, height:13 }}/>{label}
                     </Link>
                   );
                 })}
               </nav>
 
               {/* Actions */}
-              <div className="flex items-center gap-1.5 md:ml-2">
-                <button onClick={toggle}
-                  className="w-8 h-8 rounded-xl flex items-center justify-center"
-                  style={{ background:"var(--surface2)", border:"1px solid var(--border)", transition:"background .15s" }}
-                  onMouseEnter={e=>(e.currentTarget.style.background="var(--surface3)")}
-                  onMouseLeave={e=>(e.currentTarget.style.background="var(--surface2)")}>
+              <div style={{ display:"flex", alignItems:"center", gap:6, marginLeft:"auto" }} className="nav-actions">
+                {/* theme toggle */}
+                <button onClick={toggle} style={{
+                  width:34, height:34, borderRadius:10, border:"1px solid var(--border)",
+                  background:"var(--surface2)", display:"flex", alignItems:"center", justifyContent:"center",
+                  cursor:"pointer", flexShrink:0,
+                }}>
                   {dark
-                    ? <Sun className="w-3.5 h-3.5" style={{ color:"#fbbf24" }}/>
-                    : <Moon className="w-3.5 h-3.5" style={{ color:"var(--text2)" }}/>}
+                    ? <Sun style={{ width:15, height:15, color:"#fbbf24" }}/>
+                    : <Moon style={{ width:15, height:15, color:"var(--text2)" }}/>}
                 </button>
 
-                <Link href="/customer/cart"
-                  className="relative w-8 h-8 rounded-xl flex items-center justify-center"
-                  style={{ background:"var(--surface2)", border:"1px solid var(--border)", transition:"background .15s" }}
-                  onMouseEnter={e=>(e.currentTarget.style.background="var(--surface3)")}
-                  onMouseLeave={e=>(e.currentTarget.style.background="var(--surface2)")}>
-                  <ShoppingCart className="w-3.5 h-3.5" style={{ color:"var(--text2)" }}/>
+                {/* cart */}
+                <Link href="/customer/cart" style={{
+                  position:"relative", width:34, height:34, borderRadius:10,
+                  border:"1px solid var(--border)", background:"var(--surface2)",
+                  display:"flex", alignItems:"center", justifyContent:"center",
+                  textDecoration:"none", flexShrink:0,
+                }}>
+                  <ShoppingCart style={{ width:15, height:15, color:"var(--text2)" }}/>
                   {itemCount > 0 && (
-                    <span className="absolute -top-1 -right-1 text-white text-[9px] font-black rounded-full w-4 h-4 flex items-center justify-center"
-                      style={{ background:"linear-gradient(135deg,#f43f5e,#e11d48)", boxShadow:"0 2px 6px rgba(244,63,94,.45)" }}>
-                      {itemCount>9?"9+":itemCount}
+                    <span style={{
+                      position:"absolute", top:-5, right:-5,
+                      width:16, height:16, borderRadius:"50%",
+                      background:"linear-gradient(135deg,#f43f5e,#e11d48)",
+                      boxShadow:"0 2px 6px rgba(244,63,94,.45)",
+                      display:"flex", alignItems:"center", justifyContent:"center",
+                      color:"#fff", fontSize:9, fontWeight:900,
+                    }}>
+                      {itemCount > 9 ? "9+" : itemCount}
                     </span>
                   )}
                 </Link>
 
-                <button onClick={()=>setMobileOpen(!mobileOpen)}
-                  className="md:hidden w-8 h-8 rounded-xl flex items-center justify-center"
-                  style={{ background:"var(--surface2)", border:"1px solid var(--border)" }}>
+                {/* hamburger — mobile only */}
+                <button onClick={()=>setMobileOpen(!mobileOpen)} style={{
+                  width:34, height:34, borderRadius:10, border:"1px solid var(--border)",
+                  background:"var(--surface2)", display:"flex", alignItems:"center", justifyContent:"center",
+                  cursor:"pointer", flexShrink:0,
+                }} className="nav-hamburger">
                   {mobileOpen
-                    ? <X className="w-3.5 h-3.5" style={{ color:"var(--text2)" }}/>
-                    : <Menu className="w-3.5 h-3.5" style={{ color:"var(--text2)" }}/>}
+                    ? <X style={{ width:15, height:15, color:"var(--text2)" }}/>
+                    : <Menu style={{ width:15, height:15, color:"var(--text2)" }}/>}
                 </button>
               </div>
             </div>
@@ -169,41 +189,70 @@ export default function Navbar() {
 
           {/* Mobile dropdown */}
           {mobileOpen && (
-            <div className="md:hidden px-4 pb-4 pt-2 space-y-1"
-              style={{ borderTop:"1px solid var(--border)" }}>
+            <div style={{
+              borderTop:"1px solid var(--border)",
+              background: navBg,
+              padding:"12px 16px 16px",
+            }} className="nav-mobile-menu">
               {/* Mobile search */}
-              <form onSubmit={handleNavSearch} className="relative mb-2">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5" style={{ color:"var(--text3)" }}/>
+              <form onSubmit={handleNavSearch} style={{ position:"relative", marginBottom:10 }}>
+                <Search style={{ position:"absolute", left:12, top:"50%", transform:"translateY(-50%)", width:15, height:15, color:"var(--text3)", pointerEvents:"none" }}/>
                 <input type="text" placeholder="Cari produk…"
                   value={navSearch} onChange={e=>setNavSearch(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2.5 rounded-xl text-sm font-medium outline-none"
-                  style={{ background:"var(--surface2)", border:"1px solid var(--border)", color:"var(--text)" }}/>
+                  style={{
+                    width:"100%", paddingLeft:38, paddingRight:12, paddingTop:10, paddingBottom:10,
+                    borderRadius:12, fontSize:14, fontWeight:500, outline:"none",
+                    background:"var(--surface2)", border:"1px solid var(--border)", color:"var(--text)",
+                    boxSizing:"border-box",
+                  }}
+                />
               </form>
-              {roles.map(({ href, label, icon:Icon, match }) => {
-                const active = match(pathname);
-                return (
-                  <Link key={href} href={href} onClick={()=>setMobileOpen(false)}
-                    className="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold"
-                    style={{
-                      background: active ? "linear-gradient(135deg,#6366f1,#8b5cf6)" : "transparent",
-                      color: active ? "#fff" : "var(--text2)",
-                    }}>
-                    <Icon className="w-4 h-4"/>{label}
-                  </Link>
-                );
-              })}
+              {/* Mobile role links */}
+              <div style={{ display:"flex", flexDirection:"column", gap:4 }}>
+                {roles.map(({ href, label, icon:Icon, match }) => {
+                  const active = match(pathname);
+                  return (
+                    <Link key={href} href={href}
+                      style={{
+                        display:"flex", alignItems:"center", gap:12,
+                        padding:"12px 16px", borderRadius:14,
+                        fontSize:14, fontWeight:600, textDecoration:"none",
+                        background: active ? "linear-gradient(135deg,#6366f1,#8b5cf6)" : "transparent",
+                        color: active ? "#fff" : "var(--text2)",
+                      }}>
+                      <Icon style={{ width:16, height:16 }}/>{label}
+                    </Link>
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>
 
         {/* Bottom accent line */}
-        <div className="h-px" style={{
-          background: "linear-gradient(90deg,transparent,rgba(99,102,241,.5),rgba(139,92,246,.5),transparent)",
+        <div style={{
+          height:1,
+          background:"linear-gradient(90deg,transparent,rgba(99,102,241,.5),rgba(139,92,246,.5),transparent)",
         }}/>
       </header>
 
-      {/* One single spacer = navbar height (65px) + 1px accent line */}
-      <div style={{ height: 66 }} aria-hidden/>
+      {/* Responsive styles */}
+      <style>{`
+        .nav-search-desktop  { display: none !important; }
+        .nav-roles-desktop   { display: none !important; }
+        .nav-hamburger       { display: flex !important; }
+
+        @media (min-width: 768px) {
+          .nav-search-desktop  { display: flex !important; }
+          .nav-roles-desktop   { display: flex !important; }
+          .nav-hamburger       { display: none !important; }
+          .nav-mobile-menu     { display: none !important; }
+          .nav-actions         { margin-left: 0 !important; }
+        }
+      `}</style>
+
+      {/* Spacer: navbar 60px + accent line 1px */}
+      <div style={{ height:61 }} aria-hidden/>
     </>
   );
 }
