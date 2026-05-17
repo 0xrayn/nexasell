@@ -196,7 +196,8 @@ function NumberBox({ label, number, dark }: { label: string; number: string; dar
 
 /* ─── Inner (needs useSearchParams) ─── */
 function PaymentInner() {
-  const { dark } = useTheme();
+  const { dark: _dark, mounted } = useTheme();
+  const dark = mounted ? _dark : false;
   const searchParams = useSearchParams();
 
   const order = MOCK_ORDER;

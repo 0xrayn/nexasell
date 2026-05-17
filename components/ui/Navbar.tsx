@@ -17,7 +17,8 @@ const roles = [
 
 export default function Navbar() {
   const { itemCount } = useCart();
-  const { dark, toggle } = useTheme();
+  const { dark: _dark, mounted, toggle } = useTheme();
+  const dark = mounted ? _dark : false;
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled]     = useState(false);
   const [navSearch, setNavSearch]   = useState("");

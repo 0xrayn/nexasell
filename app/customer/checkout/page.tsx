@@ -84,18 +84,38 @@ export default function CheckoutPage() {
     if (errors[name]) setErrors(er => { const n = { ...er }; delete n[name]; return n; });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const errs = validate();
     if (Object.keys(errs).length) { setErrors(errs); return; }
+    if (!items.length) return;
     setLoading(true);
     setOrderName(form.name);
     setSavedPayMethod(form.payment);
-    /* Teruskan metode pembayaran ke halaman payment via query param */
-    setTimeout(() => {
-      setLoading(false);
-      router.push(`/customer/payment?orderId=ORD-2024-0042&method=${form.payment}`);
-    }, 1500);
+    try {
+      const res = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          customer_name:    form.name.trim(),
+          customer_phone:   form.phone.trim(),
+          customer_address: `${form.address.trim()}, ${form.city.trim()}`,
+          notes:            form.notes.trim() || null,
+          pay_method:       form.payment,
+          source:           "online",
+          items: items.map(i => ({
+            product_id: i.product.id,
+            name:       i.product.name,
+            price:      i.product.price,
+            quantity:   i.quantity,
+            image_url:  i.product.image,
+          })),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) { alert(data.error || "Gagal membuat order"); setLoading(false); return; }
+      router.push(`/customer/payment?orderId=${data.data.id}&method=${form.payment}`);
+    } catch { alert("Terjadi kesalahan. Coba lagi."); setLoading(false); }
   };
 
   /* ── Success state ── */

@@ -1,41 +1,94 @@
 "use client";
-import { useState } from "react";
-import { ArrowLeft, CheckCircle, ImageIcon } from "lucide-react";
+import { useState, useRef } from "react";
+import { ArrowLeft, CheckCircle, ImageIcon, Upload, X, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { categories } from "@/data/products";
 
 export default function AddProductPage() {
-  const [saved, setSaved] = useState(false);
-  const [form, setForm] = useState({ name:"", price:"", originalPrice:"", category:"food", description:"", stock:"", badge:"", image:"" });
+  const router = useRouter();
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [saved,     setSaved]     = useState(false);
+  const [loading,   setLoading]   = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [apiErr,    setApiErr]    = useState("");
+  const [form, setForm] = useState({
+    name:"", price:"", originalPrice:"", category:"food",
+    description:"", stock:"", badge:"", image:"",
+  });
   const [errors, setErrors] = useState<Record<string,string>>({});
+  const [preview, setPreview] = useState("");
 
   const validate = () => {
     const e: Record<string,string> = {};
-    if (!form.name.trim()) e.name = "Required";
-    if (!form.price) e.price = "Required";
-    if (!form.description.trim()) e.description = "Required";
-    if (!form.stock) e.stock = "Required";
+    if (!form.name.trim())    e.name        = "Wajib diisi";
+    if (!form.price)          e.price       = "Wajib diisi";
+    if (Number(form.price)<=0)e.price       = "Harga harus > 0";
+    if (!form.description.trim()) e.description = "Wajib diisi";
+    if (!form.stock)          e.stock       = "Wajib diisi";
+    if (Number(form.stock)<0) e.stock       = "Stok tidak boleh negatif";
     return e;
   };
 
   const upd = (f: string) => (e: React.ChangeEvent<HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement>) => {
-    setForm((p) => ({ ...p, [f]: e.target.value }));
-    if (errors[f]) setErrors((er) => { const n={...er}; delete n[f]; return n; });
+    setForm(p => ({ ...p, [f]: e.target.value }));
+    if (errors[f]) setErrors(er => { const n={...er}; delete n[f]; return n; });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleImageUpload = async (file: File) => {
+    setUploading(true);
+    setApiErr("");
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/upload", { method:"POST", body:fd });
+      const data = await res.json();
+      if (!res.ok) { setApiErr(data.error || "Upload gagal"); return; }
+      setForm(p => ({ ...p, image: data.url }));
+      setPreview(data.url);
+    } catch { setApiErr("Upload gagal. Coba lagi."); }
+    finally { setUploading(false); }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const errs = validate();
     if (Object.keys(errs).length) { setErrors(errs); return; }
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    setLoading(true);
+    setApiErr("");
+    try {
+      const res = await fetch("/api/products", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name:           form.name.trim(),
+          price:          Number(form.price),
+          original_price: form.originalPrice ? Number(form.originalPrice) : null,
+          category:       form.category,
+          image_url:      form.image || null,
+          description:    form.description.trim(),
+          stock:          Number(form.stock),
+          badge:          form.badge.trim() || null,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setApiErr(data.error || "Gagal menyimpan"); setLoading(false); return; }
+      setSaved(true);
+      setTimeout(() => router.push("/admin/products"), 1500);
+    } catch { setApiErr("Terjadi kesalahan. Coba lagi."); setLoading(false); }
   };
 
-  const F = ({ field, label, type="text", placeholder="", required=false }: { field:string; label:string; type?:string; placeholder?:string; required?:boolean }) => (
+  const F = ({ field, label, type="text", placeholder="", required=false }: {
+    field:string; label:string; type?:string; placeholder?:string; required?:boolean;
+  }) => (
     <div>
-      <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5">{label}{required && <span className="text-red-400 ml-1">*</span>}</label>
+      <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5">
+        {label}{required && <span className="text-red-400 ml-1">*</span>}
+      </label>
       <input type={type} value={(form as Record<string,string>)[field]} onChange={upd(field)} placeholder={placeholder}
-        className={`w-full px-3.5 py-2.5 rounded-xl border text-sm outline-none transition-all bg-gray-50 dark:bg-white/[0.04] text-gray-900 dark:text-gray-100 ${errors[field] ? "border-red-400 focus:ring-2 focus:ring-red-300" : "border-black/[0.08] dark:border-white/[0.08] focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-400"}`} />
+        className={`w-full px-3.5 py-2.5 rounded-xl border text-sm outline-none transition-all bg-gray-50 dark:bg-white/[0.04] text-gray-900 dark:text-gray-100 ${
+          errors[field] ? "border-red-400 focus:ring-2 focus:ring-red-300" : "border-black/[0.08] dark:border-white/[0.08] focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-400"
+        }`}/>
       {errors[field] && <p className="text-xs text-red-400 mt-1">{errors[field]}</p>}
     </div>
   );
@@ -43,19 +96,23 @@ export default function AddProductPage() {
   return (
     <div className="p-4 sm:p-6 w-full max-w-full">
       <Link href="/admin/products" className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-indigo-500 mb-5 transition-colors group">
-        <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />Back
+        <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform"/>Back
       </Link>
       <div className="mb-5">
         <div className="flex items-center gap-2 mb-0.5">
-          <div className="w-1.5 h-5 bg-gradient-to-b from-indigo-500 to-violet-500 rounded-full" />
-          <h1 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white" style={{ fontFamily:'Syne,sans-serif' }}>Add Product</h1>
+          <div className="w-1.5 h-5 bg-gradient-to-b from-indigo-500 to-violet-500 rounded-full"/>
+          <h1 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white" style={{fontFamily:"Syne,sans-serif"}}>Add Product</h1>
         </div>
       </div>
 
       {saved && (
-        <div className="flex items-center gap-3 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 px-4 py-3 rounded-xl mb-5 border border-emerald-200 dark:border-emerald-500/20 animate-slide-up">
-          <CheckCircle className="w-4 h-4 flex-shrink-0" />
-          <span className="text-sm font-semibold">Product saved!</span>
+        <div className="flex items-center gap-3 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 px-4 py-3 rounded-xl mb-5 border border-emerald-200 dark:border-emerald-500/20">
+          <CheckCircle className="w-4 h-4 flex-shrink-0"/><span className="text-sm font-semibold">Produk berhasil disimpan! Mengalihkan...</span>
+        </div>
+      )}
+      {apiErr && (
+        <div className="flex items-center gap-3 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 px-4 py-3 rounded-xl mb-5 border border-red-200 dark:border-red-500/20">
+          <X className="w-4 h-4 flex-shrink-0"/><span className="text-sm">{apiErr}</span>
         </div>
       )}
 
@@ -63,74 +120,89 @@ export default function AddProductPage() {
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
           <div className="xl:col-span-2 space-y-4">
             <div className="bg-[var(--surface)] rounded-2xl p-4 sm:p-5 border border-black/[0.06] dark:border-white/[0.06] space-y-4">
-              <h2 className="text-sm font-bold text-gray-900 dark:text-white">Basic Info</h2>
-              <F field="name" label="Product Name" placeholder="e.g. Premium Coffee" required />
+              <h2 className="text-sm font-bold text-gray-900 dark:text-white">Info Dasar</h2>
+              <F field="name" label="Nama Produk" placeholder="e.g. Premium Coffee" required/>
               <div>
-                <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Description <span className="text-red-400">*</span></label>
-                <textarea rows={3} value={form.description} onChange={upd("description")} placeholder="Describe the product..."
-                  className={`w-full px-3.5 py-2.5 rounded-xl border text-sm outline-none transition-all bg-gray-50 dark:bg-white/[0.04] text-gray-900 dark:text-gray-100 resize-none ${errors.description ? "border-red-400" : "border-black/[0.08] dark:border-white/[0.08] focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-400"}`} />
+                <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5">
+                  Deskripsi <span className="text-red-400">*</span>
+                </label>
+                <textarea rows={3} value={form.description} onChange={upd("description")} placeholder="Deskripsikan produk..."
+                  className={`w-full px-3.5 py-2.5 rounded-xl border text-sm outline-none transition-all bg-gray-50 dark:bg-white/[0.04] text-gray-900 dark:text-gray-100 resize-none ${
+                    errors.description ? "border-red-400" : "border-black/[0.08] dark:border-white/[0.08] focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-400"
+                  }`}/>
                 {errors.description && <p className="text-xs text-red-400 mt-1">{errors.description}</p>}
               </div>
             </div>
             <div className="bg-[var(--surface)] rounded-2xl p-4 sm:p-5 border border-black/[0.06] dark:border-white/[0.06]">
-              <h2 className="text-sm font-bold text-gray-900 dark:text-white mb-4">Pricing & Inventory</h2>
+              <h2 className="text-sm font-bold text-gray-900 dark:text-white mb-4">Harga & Stok</h2>
               <div className="grid grid-cols-3 gap-3">
-                <F field="price" label="Price (Rp)" type="number" placeholder="50000" required />
-                <F field="originalPrice" label="Original Price" type="number" placeholder="75000" />
-                <F field="stock" label="Stock" type="number" placeholder="100" required />
-              </div>
-            </div>
-            <div className="bg-[var(--surface)] rounded-2xl p-4 sm:p-5 border border-black/[0.06] dark:border-white/[0.06]">
-              <h2 className="text-sm font-bold text-gray-900 dark:text-white mb-4">Classification</h2>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Category *</label>
-                  <select value={form.category} onChange={upd("category")} className="w-full px-3.5 py-2.5 rounded-xl border border-black/[0.08] dark:border-white/[0.08] bg-gray-50 dark:bg-white/[0.04] text-gray-900 dark:text-gray-100 text-sm outline-none focus:ring-2 focus:ring-indigo-500/50">
-                    {categories.filter(c => c.id !== "all").map(c => <option key={c.id} value={c.id}>{c.icon} {c.name}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Badge</label>
-                  <select value={form.badge} onChange={upd("badge")} className="w-full px-3.5 py-2.5 rounded-xl border border-black/[0.08] dark:border-white/[0.08] bg-gray-50 dark:bg-white/[0.04] text-gray-900 dark:text-gray-100 text-sm outline-none focus:ring-2 focus:ring-indigo-500/50">
-                    <option value="">None</option>
-                    <option value="New">🆕 New</option>
-                    <option value="Sale">🔥 Sale</option>
-                    <option value="Best Seller">⭐ Best Seller</option>
-                  </select>
-                </div>
+                <F field="price" label="Harga (Rp)" type="number" placeholder="50000" required/>
+                <F field="originalPrice" label="Harga Asli" type="number" placeholder="75000"/>
+                <F field="stock" label="Stok" type="number" placeholder="100" required/>
               </div>
             </div>
           </div>
 
           <div className="space-y-4">
+            {/* Image Upload */}
             <div className="bg-[var(--surface)] rounded-2xl p-4 sm:p-5 border border-black/[0.06] dark:border-white/[0.06]">
-              <h2 className="text-sm font-bold text-gray-900 dark:text-white mb-3">Product Image</h2>
-              <div className="aspect-square rounded-2xl overflow-hidden bg-gray-100 dark:bg-white/[0.04] border border-black/[0.06] dark:border-white/[0.06] mb-3 flex items-center justify-center">
-                {form.image ? (
-                  <img src={form.image} alt="Preview" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src=""; }} />
-                ) : (
-                  <div className="text-center">
-                    <ImageIcon className="w-8 h-8 text-gray-300 dark:text-gray-600 mx-auto mb-1" />
-                    <p className="text-[11px] text-gray-400">Preview</p>
-                  </div>
-                )}
-              </div>
-              <F field="image" label="Image URL" placeholder="https://..." />
+              <h2 className="text-sm font-bold text-gray-900 dark:text-white mb-3">Gambar Produk</h2>
+              {preview ? (
+                <div className="relative mb-3">
+                  <img src={preview} alt="Preview" className="w-full aspect-square object-cover rounded-xl"/>
+                  <button type="button" onClick={()=>{setPreview("");setForm(p=>({...p,image:""}));}}
+                    className="absolute top-2 right-2 w-7 h-7 bg-black/60 rounded-full flex items-center justify-center">
+                    <X className="w-3.5 h-3.5 text-white"/>
+                  </button>
+                </div>
+              ) : (
+                <button type="button" onClick={()=>fileRef.current?.click()}
+                  disabled={uploading}
+                  className="w-full aspect-square border-2 border-dashed border-black/[0.1] dark:border-white/[0.1] rounded-xl flex flex-col items-center justify-center gap-2 hover:border-indigo-400 transition-colors mb-3">
+                  {uploading
+                    ? <Loader2 className="w-8 h-8 text-indigo-400 animate-spin"/>
+                    : <><ImageIcon className="w-8 h-8 text-gray-400"/><p className="text-xs text-gray-400">Klik untuk upload</p><p className="text-[10px] text-gray-300">JPG, PNG, WEBP — maks 5MB</p></>
+                  }
+                </button>
+              )}
+              <input ref={fileRef} type="file" accept="image/*" className="hidden"
+                onChange={e=>{ const f=e.target.files?.[0]; if(f) handleImageUpload(f); }}/>
+              <p className="text-xs text-gray-400 mb-1.5">Atau masukkan URL gambar:</p>
+              <input type="url" value={form.image} onChange={e=>{setForm(p=>({...p,image:e.target.value}));setPreview(e.target.value);}}
+                placeholder="https://..."
+                className="w-full px-3 py-2 rounded-xl border border-black/[0.08] dark:border-white/[0.08] bg-gray-50 dark:bg-white/[0.04] text-sm text-gray-900 dark:text-gray-100 outline-none focus:ring-2 focus:ring-indigo-500/50"/>
+              {uploading && <div className="flex items-center gap-2 mt-2"><Upload className="w-3.5 h-3.5 text-indigo-400 animate-pulse"/><p className="text-xs text-indigo-400">Mengupload ke Supabase Storage...</p></div>}
             </div>
-            <div className="bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-indigo-500/10 dark:to-violet-500/10 rounded-2xl p-4 border border-indigo-100 dark:border-indigo-500/20">
-              <p className="text-xs font-bold text-indigo-700 dark:text-indigo-300 mb-2">💡 Tips</p>
-              <ul className="text-[11px] text-indigo-600 dark:text-indigo-400 space-y-1">
-                <li>• Use Unsplash for free images</li>
-                <li>• Add original price for sale badge</li>
-                <li>• Best Seller badge drives clicks</li>
-              </ul>
-            </div>
-          </div>
-        </div>
 
-        <div className="flex gap-3 mt-5 max-w-sm">
-          <Link href="/admin/products" className="flex-1 py-3 rounded-xl border border-black/[0.08] dark:border-white/[0.08] text-sm font-semibold text-gray-600 dark:text-gray-400 text-center hover:bg-gray-50 dark:hover:bg-white/[0.04] transition-colors">Cancel</Link>
-          <button type="submit" className="flex-1 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-violet-500 hover:from-indigo-600 hover:to-violet-600 text-white text-sm font-bold transition-all shadow-md shadow-indigo-500/20 active:scale-95">Save Product</button>
+            {/* Category & Badge */}
+            <div className="bg-[var(--surface)] rounded-2xl p-4 sm:p-5 border border-black/[0.06] dark:border-white/[0.06] space-y-3">
+              <h2 className="text-sm font-bold text-gray-900 dark:text-white">Detail Lainnya</h2>
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Kategori</label>
+                <select value={form.category} onChange={upd("category")}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-black/[0.08] dark:border-white/[0.08] bg-gray-50 dark:bg-white/[0.04] text-sm text-gray-900 dark:text-gray-100 outline-none focus:ring-2 focus:ring-indigo-500/50">
+                  {categories.filter(c=>c.id!=="all").map(c=>(
+                    <option key={c.id} value={c.id}>{c.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Badge (opsional)</label>
+                <select value={form.badge} onChange={upd("badge")}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-black/[0.08] dark:border-white/[0.08] bg-gray-50 dark:bg-white/[0.04] text-sm text-gray-900 dark:text-gray-100 outline-none focus:ring-2 focus:ring-indigo-500/50">
+                  <option value="">Tidak ada</option>
+                  <option value="Best Seller">Best Seller</option>
+                  <option value="Sale">Sale</option>
+                  <option value="New">New</option>
+                </select>
+              </div>
+            </div>
+
+            <button type="submit" disabled={loading||uploading}
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-violet-500 hover:from-indigo-600 hover:to-violet-600 text-white font-semibold text-sm transition-all shadow-md shadow-indigo-500/20 active:scale-95 disabled:opacity-70 flex items-center justify-center gap-2">
+              {loading ? <><Loader2 className="w-4 h-4 animate-spin"/>Menyimpan...</> : "Simpan Produk"}
+            </button>
+          </div>
         </div>
       </form>
     </div>

@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { useSidebar } from "@/lib/SidebarContext";
 import { useState, useRef, useEffect } from "react";
+import { createClient } from "@/lib/supabase/client";
 
 const nav = [
   { href:"/admin",              label:"Dashboard",   icon:LayoutDashboard, color:"#6366f1", bg:"rgba(99,102,241,0.1)"  },
@@ -27,6 +28,12 @@ function UserDropdown({ accentColor = "#6366f1", toLogin = "/admin/login" }: { a
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
+
+  const handleLogout = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push(toLogin);
+  };
 
   const menuItems = [
     { icon: User,     label: "Edit Profil",    action: () => { router.push("/admin/settings"); setOpen(false); } },
@@ -63,7 +70,7 @@ function UserDropdown({ accentColor = "#6366f1", toLogin = "/admin/login" }: { a
             ))}
           </div>
           <div style={{ borderTop:"1px solid var(--border)" }}>
-            <button onClick={()=>router.push(toLogin)}
+            <button onClick={handleLogout}
               className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-left"
               style={{ color:"#ef4444", transition:"background 0.15s" }}
               onMouseEnter={e=>(e.currentTarget.style.background="rgba(239,68,68,0.06)")}

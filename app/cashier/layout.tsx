@@ -1,9 +1,16 @@
 "use client";
 import CashierSidebar from "@/components/cashier/CashierSidebar";
 import { SidebarProvider, useSidebar } from "@/lib/SidebarContext";
+import { usePathname } from "next/navigation";
 
 function CashierContent({ children }: { children: React.ReactNode }) {
   const { collapsed } = useSidebar();
+  const pathname = usePathname();
+
+  if (pathname === "/cashier/login") {
+    return <>{children}</>;
+  }
+
   return (
     <div style={{ background: "var(--bg)", minHeight: "100vh" }}>
       <CashierSidebar />

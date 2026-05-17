@@ -14,7 +14,8 @@ import { useTheme } from "@/lib/ThemeContext";
 import Link from "next/link";
 
 export default function HomePage() {
-  const { dark } = useTheme();
+  const { dark: _dark, mounted } = useTheme();
+  const dark = mounted ? _dark : false;
   const [inputVal, setInputVal] = useState("");
   const [search, setSearch] = useState("");
   const [activeCat, setActiveCat] = useState("all");
@@ -69,7 +70,7 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: "var(--bg)" }}>
+    <div className="min-h-screen flex flex-col" style={{ background: "var(--bg)" }} suppressHydrationWarning>
       <Navbar />
 
       <style>{`
